@@ -22,7 +22,6 @@
         body {
             font-family: 'Sarabun', sans-serif;
             background-color: var(--bg-cute);
-            /* พื้นหลังสีพาสเทลไล่เฉด */
             background-image: 
                 radial-gradient(circle at 15% 20%, rgba(251, 207, 232, 0.6), transparent 40%),
                 radial-gradient(circle at 85% 30%, rgba(191, 219, 254, 0.6), transparent 40%),
@@ -35,7 +34,7 @@
         }
         .font-cute { font-family: 'Mali', cursive; }
         
-        /* กล่องข้อความสไตล์กระจกขุ่น น่ารักๆ */
+        /* Glassmorphism Panels */
         .glass-panel {
             background: var(--panel-bg);
             backdrop-filter: blur(12px);
@@ -45,7 +44,7 @@
             border-radius: 2rem;
         }
 
-        /* ปุ่มกดแบบ 3D เยลลี่ */
+        /* 3D Jelly Buttons */
         .btn-3d {
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
@@ -66,9 +65,8 @@
         .btn-yellow { background: linear-gradient(145deg, #fde047, #facc15); border-color: #ca8a04; color: #78350f; }
         .btn-green { background: linear-gradient(145deg, #34d399, #10b981); border-color: #047857; color: white; }
         .btn-purple { background: linear-gradient(145deg, #c084fc, #a855f7); border-color: #7e22ce; color: white; }
-        .btn-white { background: white; border-color: #e2e8f0; color: #64748b; }
 
-        /* สไตล์สำหรับใบงานเสมือนจริง (น่ารัก) */
+        /* Worksheet Paper */
         .worksheet-paper {
             background: white;
             box-shadow: 0 15px 35px rgba(0,0,0,0.05);
@@ -83,7 +81,6 @@
             border-radius: 1.5rem;
             border: 2px solid #fecdd3;
         }
-        /* เทปกาวตกแต่ง */
         .washi-tape {
             position: absolute;
             top: -15px;
@@ -117,59 +114,39 @@
         }
         .worksheet-input:focus { border-bottom-color: #fb7185; }
 
-        /* Video Container Ratio */
+        /* Video Container */
         .video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%;
             border-radius: 1rem;
             overflow: hidden;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             border: 4px solid #fff;
+            background-color: #1e293b;
         }
-        .video-container iframe {
+        .video-container iframe, .video-container video {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
+            top: 0; left: 0; width: 100%; height: 100%; border: 0;
         }
 
-        /* การตั้งค่าสำหรับการพิมพ์ PDF ให้ประหยัดหมึก */
         @media print {
             body { background: white; }
             .no-print { display: none !important; }
-            .worksheet-paper {
-                box-shadow: none;
-                padding: 20px;
-                background-image: none;
-                border: none;
-            }
+            .worksheet-paper { box-shadow: none; padding: 20px; background-image: none; border: none; }
             .worksheet-paper::before, .washi-tape { display: none; }
             .worksheet-input { border-bottom: 1px solid #ccc; font-family: 'Sarabun', sans-serif; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
 
-        /* อนิเมชันห้องทดลอง & ลอยไปมา */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(3deg); }
-        }
-        @keyframes dropIn {
-            0% { transform: translateY(-40px) scale(0.9); opacity: 0; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
-        }
-        @keyframes shakeCute {
-            0%, 100% { transform: rotate(0); }
-            25% { transform: rotate(-8deg); }
-            75% { transform: rotate(8deg); }
-        }
+        /* Animations */
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } }
+        @keyframes dropIn { 0% { transform: translateY(-40px) scale(0.9); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes shakeCute { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
         .anim-float { animation: float 4s ease-in-out infinite; }
         .anim-drop { animation: dropIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         .anim-shake { animation: shakeCute 0.5s infinite; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(251, 113, 133, 0.4); border-radius: 10px; }
@@ -178,7 +155,7 @@
 </head>
 <body class="relative">
 
-    <!-- ของตกแต่งลอยได้ด้านหลัง -->
+    <!-- ของตกแต่งลอยได้ด้านหลัง (Cute Emojis) -->
     <div class="fixed top-20 left-10 text-6xl opacity-30 anim-float pointer-events-none z-0" style="animation-delay: 0s;">☁️</div>
     <div class="fixed top-40 right-16 text-5xl opacity-40 anim-float pointer-events-none z-0" style="animation-delay: 1.5s;">✨</div>
     <div class="fixed bottom-20 left-1/4 text-6xl opacity-30 anim-float pointer-events-none z-0" style="animation-delay: 2.2s;">🌸</div>
@@ -188,11 +165,11 @@
     <div class="no-print p-4 w-full max-w-7xl mx-auto relative z-50">
         <nav class="glass-panel px-6 py-4 flex justify-between items-center shadow-lg">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-rose-500 text-2xl shadow-inner border-2 border-white">
+                <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-rose-500 text-2xl shadow-inner border-2 border-white cursor-pointer" onclick="goHome()">
                     <i class="fa-solid fa-flask"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-cute font-bold text-rose-500 leading-none">Polymer Learning</h1>
+                    <h1 class="text-2xl font-cute font-bold text-rose-500 leading-none cursor-pointer" onclick="goHome()">Polymer Learning</h1>
                     <p class="text-xs text-rose-400 font-bold tracking-wider uppercase mt-1">Fun Chemistry 🌟</p>
                 </div>
             </div>
@@ -204,15 +181,29 @@
     <main id="app-content" class="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 relative z-10 flex flex-col justify-center"></main>
 
     <script>
-        // --- STREAMING_CHUNK: Initializing state and game data... ---
-        const GAME_KEY = 'polymer_learning_cute_v3';
-        let state = {
-            players: {}, // เก็บข้อมูลนักเรียน
-            status: 'login' // login, student_hub, teacher_dash
-        };
+        // =========================================================================
+        // OFFLINE MODE (Local Storage Only)
+        // ระบบนี้จะบันทึกข้อมูลทุกอย่างไว้ในเครื่อง (เบราว์เซอร์) ไม่ต้องพึ่งอินเทอร์เน็ต
+        // =========================================================================
+        const STORAGE_KEY = 'polymer_cute_app_data';
+
+        // โหลดข้อมูลเริ่มต้นจาก Local Storage
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : { players: {}, lastUser: '' };
+        }
+
+        // เซฟข้อมูลลง Local Storage
+        function saveData(dataObj) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dataObj));
+        }
+
+        // สถานะของแอพ
+        let appData = loadData();
+        let state = { status: 'login' };
         let currentUser = null;
 
-        // คำถามสำหรับทดสอบ (ง่ายกระชับ)
+        // คำถามสำหรับทดสอบ
         const questions = [
             { q: "ข้อใดคือความหมายของพอลิเมอร์?", options: ["สารโมเลกุลใหญ่ที่เกิดจากมอนอเมอร์ต่อกัน", "สารละลายเข้มข้น", "ธาตุหมู่ 8", "สารที่พบในพลาสติกเท่านั้น"], a: 0 },
             { q: "ปฏิกิริยาการเกิดพอลิเมอร์แบบเติม มีลักษณะอย่างไร?", options: ["มีน้ำหลุดออกมา", "มอนอเมอร์มีพันธะคู่และไม่มีสารอื่นหลุดออกมา", "ต้องใช้ความเย็นสูง", "เกิดเป็นโครงร่างตาข่ายเสมอ"], a: 1 },
@@ -221,20 +212,42 @@
             { q: "พลาสติกที่ใช้ทำขวดน้ำดื่ม (PET) เป็นพอลิเมอร์ประเภทใด?", options: ["แบบเติม", "แบบควบแน่น", "แบบร่างแห", "ยางธรรมชาติ"], a: 1 }
         ];
 
-        // กำหนด Custom SweetAlert Theme ให้เข้ากับความน่ารัก
-        const Toast = Swal.mixin({
-            customClass: { popup: 'rounded-3xl border-4 border-pink-100 shadow-xl font-cute' }
+        const Toast = Swal.mixin({ 
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            customClass: { popup: 'rounded-2xl border-2 border-pink-100 shadow-xl font-cute' } 
         });
 
-        function loadState() {
-            const saved = localStorage.getItem(GAME_KEY);
-            if (saved) state = JSON.parse(saved);
-        }
-        function saveState() {
-            localStorage.setItem(GAME_KEY, JSON.stringify(state));
+        // ฟังก์ชันบันทึกข้อมูลของนักเรียน (ออฟไลน์)
+        function updatePlayer(playerName, updatePayload) {
+            if (!appData.players[playerName]) {
+                appData.players[playerName] = { 
+                    name: playerName, 
+                    preTest: null, 
+                    postTest: null, 
+                    worksheet: null, 
+                    worksheetScore: null, 
+                    worksheetGraded: false 
+                };
+            }
+            Object.assign(appData.players[playerName], updatePayload);
+            appData.lastUser = playerName;
+            saveData(appData);
         }
 
-        // --- STREAMING_CHUNK: App Router and UI Rendering... ---
+        function goHome() {
+            if (currentUser) {
+                state.status = 'student_hub';
+            } else if (state.status === 'teacher_dash') {
+                // อยู่หน้าครูแล้วไม่ต้องทำอะไร
+            } else {
+                state.status = 'login';
+            }
+            render();
+        }
+
         function render() {
             const app = document.getElementById('app-content');
             const navUser = document.getElementById('nav-user-info');
@@ -245,19 +258,18 @@
             } else if (state.status === 'student_hub') {
                 navUser.innerHTML = `
                     <div class="bg-blue-100 border-2 border-white shadow-sm text-blue-600 px-5 py-2 rounded-full flex items-center gap-2">
-                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=${currentUser}&backgroundColor=transparent" class="w-6 h-6 rounded-full bg-white"> 
-                        <span class="truncate max-w-[100px] md:max-w-[200px]">${currentUser}</span>
+                        <span class="truncate max-w-[100px] md:max-w-[200px] font-bold">นักเรียน: ${currentUser}</span>
                     </div> 
-                    <button onclick="logout()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-rose-400 hover:text-white hover:bg-rose-400 border-2 border-rose-100 transition shadow-sm">
+                    <button onclick="logout()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-rose-400 hover:text-white hover:bg-rose-400 border-2 border-rose-100 transition shadow-sm" title="ออกจากระบบ">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </button>`;
                 app.innerHTML = renderStudentHub();
             } else if (state.status === 'teacher_dash') {
                 navUser.innerHTML = `
-                    <span class="bg-indigo-100 border-2 border-white shadow-sm text-indigo-700 px-5 py-2 rounded-full">
-                        <i class="fa-solid fa-chalkboard-user mr-2"></i> แผงควบคุม
+                    <span class="bg-indigo-100 border-2 border-white shadow-sm text-indigo-700 font-bold px-5 py-2 rounded-full">
+                        <i class="fa-solid fa-chalkboard-user mr-2"></i> แผงควบคุมครู
                     </span> 
-                    <button onclick="logout()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-rose-400 hover:text-white hover:bg-rose-400 border-2 border-rose-100 transition shadow-sm">
+                    <button onclick="logout()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-rose-400 hover:text-white hover:bg-rose-400 border-2 border-rose-100 transition shadow-sm" title="ออกจากระบบ">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </button>`;
                 app.innerHTML = renderTeacherDash();
@@ -270,13 +282,11 @@
             render();
         }
 
-        // --- STREAMING_CHUNK: Redesigned Login Screen... ---
         function renderLogin() {
             return `
                 <div class="flex flex-col items-center justify-center w-full max-w-lg mx-auto anim-drop">
                     <!-- การ์ดหลักตรงกลาง -->
                     <div class="glass-panel p-8 w-full border-t-[8px] border-t-pink-400 flex flex-col items-center shadow-2xl relative">
-                        <!-- ไอคอนลอยตรงกลาง -->
                         <div class="absolute -top-12 bg-white rounded-full p-4 shadow-md border-4 border-pink-100">
                             <i class="fa-solid fa-graduation-cap text-6xl text-pink-400"></i>
                         </div>
@@ -286,10 +296,11 @@
                             <p class="text-slate-500 mt-3 font-bold text-lg">พิมพ์ชื่อ-นามสกุล ตรงนี้เลยจ้า</p>
                         </div>
                         
-                        <input type="text" id="studentName" placeholder="นาย/นางสาว..." 
-                            class="w-full bg-white border-4 border-pink-100 rounded-2xl px-6 py-4 text-xl font-bold focus:border-pink-400 outline-none mb-6 text-center shadow-inner text-slate-700 placeholder-slate-300 transition-colors">
+                        <input type="text" id="studentName" value="${appData.lastUser || ''}" placeholder="นาย/นางสาว..." 
+                            class="w-full bg-white border-4 border-pink-100 rounded-2xl px-6 py-4 text-xl font-bold focus:border-pink-400 outline-none mb-6 text-center shadow-inner text-slate-700 placeholder-slate-300 transition-colors"
+                            onkeypress="if(event.key === 'Enter') loginStudentAction()">
                         
-                        <button onclick="loginStudent()" class="w-full btn-3d btn-pink py-4 text-2xl mb-4">
+                        <button onclick="loginStudentAction()" class="w-full btn-3d btn-pink py-4 text-2xl mb-4">
                             <i class="fa-solid fa-rocket mr-2"></i> ไปลุยกันเลย!
                         </button>
                     </div>
@@ -297,26 +308,34 @@
                     <!-- ปุ่มสำหรับครูแยกมาด้านล่าง -->
                     <div class="mt-8">
                         <button onclick="promptTeacherLogin()" class="bg-white/80 backdrop-blur-sm border-2 border-indigo-100 text-indigo-500 hover:bg-indigo-50 px-8 py-3 rounded-full font-bold shadow-sm transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-key"></i> สำหรับคุณครู
+                            <i class="fa-solid fa-key"></i> เข้าสู่ระบบสำหรับคุณครู
                         </button>
                     </div>
                 </div>
             `;
         }
 
-        function loginStudent() {
-            const name = document.getElementById('studentName').value.trim();
+        function loginStudentAction() {
+            const nameInput = document.getElementById('studentName');
+            const name = nameInput.value.trim();
             if (!name) {
-                Toast.fire({ icon: 'warning', title: 'อ๊ะ!', text: 'อย่าลืมพิมพ์ชื่อก่อนเข้านะจ๊ะ', confirmButtonColor: '#fb7185' });
+                Toast.fire({ icon: 'warning', title: 'อย่าลืมพิมพ์ชื่อก่อนเข้านะจ๊ะ' });
+                nameInput.focus();
                 return;
             }
-            if (!state.players[name]) {
-                state.players[name] = { name: name, preTest: null, postTest: null, worksheet: null };
-                saveState();
+            
+            // ตรวจสอบหรือสร้างโปรไฟล์ใหม่
+            if (!appData.players[name]) {
+                updatePlayer(name, {}); // สร้างใหม่เปล่าๆ
+            } else {
+                appData.lastUser = name;
+                saveData(appData); // อัปเดตผู้ใช้ล่าสุด
             }
+            
             currentUser = name;
             state.status = 'student_hub';
             render();
+            Toast.fire({ icon: 'success', title: `ยินดีต้อนรับ ${name}!` });
         }
 
         function promptTeacherLogin() {
@@ -337,15 +356,14 @@
                         state.status = 'teacher_dash';
                         render();
                     } else {
-                        Toast.fire({ icon: 'error', title: 'รหัสผิด!', text: 'รหัสผ่านไม่ถูกต้องครับ', confirmButtonColor: '#ef4444' });
+                        Swal.fire({ icon: 'error', title: 'รหัสผิด!', text: 'รหัสผ่านไม่ถูกต้องครับ', confirmButtonColor: '#ef4444', customClass: { popup: 'font-cute rounded-2xl' } });
                     }
                 }
             });
         }
 
-        // --- STREAMING_CHUNK: Student Hub (Map) UI updated with 5 items... ---
         function renderStudentHub() {
-            const p = state.players[currentUser];
+            const p = appData.players[currentUser];
             const preDone = p.preTest !== null;
             const wsDone = p.worksheet !== null;
             const postDone = p.postTest !== null;
@@ -368,7 +386,7 @@
                         ${preDone 
                             ? `<div class="font-black text-green-500 text-2xl mb-2 flex items-center gap-2">⭐ ${p.preTest} / 5</div>
                                <button onclick="startActivity('quiz', 'pre')" class="text-slate-400 underline font-bold text-sm hover:text-pink-500">ทำใหม่</button>`
-                            : `<button onclick="startActivity('quiz', 'pre')" class="w-full btn-3d btn-pink py-3 text-lg">เริ่มเล๊ย!</button>`
+                            : `<button onclick="startActivity('quiz', 'pre')" class="w-full btn-3d btn-pink py-3 text-lg">เริ่มทำควิซ!</button>`
                         }
                     </div>
 
@@ -379,7 +397,7 @@
                         </div>
                         <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๒. บทเรียน & วิดีโอ</h3>
                         <p class="text-sm font-bold text-slate-500 mb-4 flex-1">อ่านสรุปความรู้และดูวิดีโอสอน</p>
-                        <button onclick="${preDone ? `startActivity('lesson')` : `Toast.fire('ล็อคอยู่!','ต้องทำทดสอบก่อนเรียนก่อนนะ','info')`}" class="w-full btn-3d btn-sky py-3 text-lg">
+                        <button onclick="${preDone ? `startActivity('lesson')` : `Toast.fire({icon:'info', title:'ต้องทำแบบทดสอบก่อนเรียนก่อนนะ'})`}" class="w-full btn-3d btn-sky py-3 text-lg">
                             ${preDone ? 'เปิดตำรา' : '<i class="fa-solid fa-lock"></i> ล็อค'}
                         </button>
                     </div>
@@ -391,12 +409,12 @@
                         </div>
                         <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๓. ห้องวิจัย</h3>
                         <p class="text-sm font-bold text-slate-500 mb-4 flex-1">ผสมสารจำลอง ดูปฏิกิริยาพอลิเมอร์</p>
-                        <button onclick="${preDone ? `startActivity('lab')` : `Toast.fire('ล็อคอยู่!','ต้องทำทดสอบก่อนเรียนก่อนนะ','info')`}" class="w-full btn-3d btn-purple py-3 text-lg">
+                        <button onclick="${preDone ? `startActivity('lab')` : `Toast.fire({icon:'info', title:'ต้องทำแบบทดสอบก่อนเรียนก่อนนะ'})`}" class="w-full btn-3d btn-purple py-3 text-lg">
                             ${preDone ? 'สวมเสื้อกาวน์' : '<i class="fa-solid fa-lock"></i> ล็อค'}
                         </button>
                     </div>
 
-                    <!-- 4. ใบงานออนไลน์ (Orange/Yellow) - จัดให้อยู่ตรงกลางแถวสอง -->
+                    <!-- 4. ใบงานออนไลน์ (Orange/Yellow) -->
                     <div class="glass-panel p-6 border-t-8 ${wsDone ? 'border-t-green-400 bg-green-50/30' : 'border-t-yellow-400'} flex flex-col items-center text-center group md:col-start-1 lg:col-start-2 ${!preDone ? 'opacity-60 grayscale' : ''}">
                         <div class="w-20 h-20 rounded-full bg-white border-4 ${wsDone ? 'border-green-300 text-green-500' : 'border-yellow-200 text-yellow-500'} flex items-center justify-center text-4xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
                             ${wsDone ? '<i class="fa-solid fa-check"></i>' : '✍️'}
@@ -407,8 +425,8 @@
                             ? `<div class="font-black ${p.worksheetGraded ? 'text-green-500 bg-green-100 border-green-200' : 'text-amber-500 bg-amber-100 border-amber-200'} text-xl mb-2 px-4 py-1 rounded-full border-2">
                                 ${p.worksheetGraded ? `⭐ ได้คะแนน ${p.worksheetScore}/10` : '<i class="fa-solid fa-hourglass-half"></i> รอคุณครูตรวจ'}
                                </div>
-                               <button onclick="startActivity('worksheet')" class="bg-white border-2 border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-bold shadow-sm hover:border-pink-300"><i class="fa-solid fa-print"></i> เปิดดู/พิมพ์</button>`
-                            : `<button onclick="${preDone ? `startActivity('worksheet')` : `Toast.fire('ล็อคอยู่!','ต้องทำทดสอบก่อนเรียนก่อนนะ','info')`}" class="w-full btn-3d btn-yellow py-3 text-lg">
+                               <button onclick="startActivity('worksheet')" class="bg-white border-2 border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-bold shadow-sm hover:border-pink-300"><i class="fa-solid fa-eye"></i> ดูใบงาน / แก้ไข</button>`
+                            : `<button onclick="${preDone ? `startActivity('worksheet')` : `Toast.fire({icon:'info', title:'ต้องทำทดสอบก่อนเรียนก่อนนะ'})`}" class="w-full btn-3d btn-yellow py-3 text-lg">
                                 ${preDone ? 'เขียนใบงาน' : '<i class="fa-solid fa-lock"></i> ล็อค'}
                                </button>`
                         }
@@ -422,8 +440,9 @@
                         <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๕. วัดผลอีกที</h3>
                         <p class="text-sm font-bold text-slate-500 mb-4 flex-1">สอบเก็บคะแนนเพื่อดูความก้าวหน้า!</p>
                         ${postDone 
-                            ? `<div class="font-black text-blue-500 text-3xl mb-2 flex items-center gap-2">⭐ ${p.postTest} / 5</div>`
-                            : `<button onclick="${wsDone ? `startActivity('quiz', 'post')` : `Toast.fire('ล็อคอยู่!','ต้องส่งใบงานก่อนถึงจะสอบได้นะ','info')`}" class="w-full btn-3d btn-blue py-3 text-lg">
+                            ? `<div class="font-black text-blue-500 text-3xl mb-2 flex items-center gap-2">⭐ ${p.postTest} / 5</div>
+                               <button onclick="startActivity('quiz', 'post')" class="text-slate-400 underline font-bold text-sm hover:text-blue-500">สอบใหม่</button>`
+                            : `<button onclick="${wsDone ? `startActivity('quiz', 'post')` : `Toast.fire({icon:'info', title:'ต้องส่งใบงานก่อนถึงจะสอบได้นะ'})`}" class="w-full btn-3d btn-blue py-3 text-lg">
                                 ${wsDone ? 'สอบไฟนอล!' : '<i class="fa-solid fa-lock"></i> ล็อค'}
                                </button>`
                         }
@@ -434,13 +453,12 @@
 
         function startActivity(type, params) {
             const app = document.getElementById('app-content');
-            if (type === 'quiz') app.innerHTML = renderStandardQuiz(params);
+            if (type === 'quiz') app.innerHTML = renderCuteQuiz(params);
             if (type === 'lesson') app.innerHTML = renderLesson();
-            if (type === 'lab') app.innerHTML = renderVirtualLab();
+            if (type === 'lab') app.innerHTML = renderCuteLab();
             if (type === 'worksheet') app.innerHTML = renderWorksheet();
         }
 
-        // --- STREAMING_CHUNK: Lesson and Video Section... ---
         function renderLesson() {
             return `
                 <div class="max-w-4xl mx-auto w-full anim-drop">
@@ -453,10 +471,10 @@
                         
                         <!-- Video Section -->
                         <div class="bg-white p-4 md:p-6 rounded-3xl shadow-sm border-4 border-sky-100 mb-10">
-                            <h3 class="text-2xl font-cute font-bold text-slate-700 mb-4 text-center">🎥 วิดีโอสอนโดยคุณครู</h3>
-                            <div class="video-container bg-slate-800">
-                                <!-- นำไฟล์วิดีโอ (เช่น .mp4) มาไว้ในโฟลเดอร์เดียวกับไฟล์เว็บนี้ แล้วเปลี่ยนชื่อ my_video.mp4 ให้ตรงกัน -->
-                                <video controls controlsList="nodownload" class="absolute top-0 left-0 w-full h-full object-contain">
+                            <h3 class="text-2xl font-cute font-bold text-slate-700 mb-4 text-center">🎥 วิดีโอ</h3>
+                            <div class="video-container">
+                                <!-- ใช้ HTML5 Video เปิดไฟล์ในเครื่อง -->
+                                <video controls class="absolute top-0 left-0 w-full h-full object-contain">
                                     <source src="Polymer คืออะไร_.mp4" type="video/mp4">
                                     เบราว์เซอร์ของคุณไม่รองรับการแสดงผลวิดีโอนี้
                                 </video>
@@ -493,8 +511,11 @@
             `;
         }
 
-        // --- STREAMING_CHUNK: Cute Standard Quiz System... ---
-        function renderStandardQuiz(type) {
+        let currentQ = 0;
+        let score = 0;
+        let quizType = '';
+
+        function renderCuteQuiz(type) {
             currentQ = 0;
             score = 0;
             quizType = type;
@@ -517,12 +538,17 @@
         function showQuestion() {
             const container = document.getElementById('quiz-container');
             if (currentQ >= questions.length) {
-                // จบแบบทดสอบ
-                state.players[currentUser][quizType + 'Test'] = score;
-                saveState();
+                // จบแบบทดสอบ บันทึกคะแนนลง Local Storage
+                const updateData = {};
+                updateData[quizType + 'Test'] = score;
+                updatePlayer(currentUser, updateData);
                 
                 const title = quizType === 'pre' ? 'สุดยอด! เสร็จก้าวแรกแล้ว' : 'ฉลองงง! เรียนจบแล้วจ้า';
                 const color = quizType === 'pre' ? 'text-pink-500' : 'text-blue-500';
+                
+                // เอฟเฟกต์พลุจุดฉลองง่ายๆ
+                Toast.fire({ icon: 'success', title: 'บันทึกคะแนนเรียบร้อยแล้ว!' });
+
                 container.innerHTML = `
                     <div class="text-center py-10 anim-drop">
                         <div class="text-[6rem] mb-4 anim-float">🎉</div>
@@ -540,7 +566,7 @@
             }
 
             const q = questions[currentQ];
-            // สีปุ่มพาสเทล 4 สี
+            // สีปุ่มพาสเทล 4 สีแบบน่ารักๆ
             const btnColors = ['bg-rose-100 border-rose-300 text-rose-700', 'bg-blue-100 border-blue-300 text-blue-700', 'bg-yellow-100 border-yellow-400 text-yellow-800', 'bg-emerald-100 border-emerald-300 text-emerald-800'];
             const hoverColors = ['hover:bg-rose-200', 'hover:bg-blue-200', 'hover:bg-yellow-200', 'hover:bg-emerald-200'];
 
@@ -568,8 +594,7 @@
             showQuestion();
         }
 
-        // --- STREAMING_CHUNK: Virtual Lab Mixing UI & Logic... ---
-        function renderVirtualLab() {
+        function renderCuteLab() {
             return `
                 <div class="max-w-4xl mx-auto w-full no-print anim-drop">
                     <button onclick="render()" class="mb-6 bg-white border-2 border-white shadow-sm text-slate-600 px-5 py-2 rounded-full font-bold hover:text-pink-500 hover:border-pink-200 transition-colors flex items-center gap-2">
@@ -593,7 +618,7 @@
                                     <span class="text-slate-300 text-2xl mt-2">➕</span>
                                     <span class="anim-float" style="animation-delay: 0.5s;">🔵</span>
                                 </div>
-                                <button onclick="runExperiment('addition')" class="btn-3d btn-blue w-full py-3 text-xl">ผสมสารเลย!</button>
+                                <button onclick="runCuteExperiment('addition')" class="btn-3d btn-blue w-full py-3 text-xl">ผสมสารเลย!</button>
                             </div>
 
                             <!-- แบบควบแน่น -->
@@ -606,7 +631,7 @@
                                     <span class="text-slate-300 text-2xl mt-2">➕</span>
                                     <span class="anim-float" style="animation-delay: 0.5s;">🔺</span>
                                 </div>
-                                <button onclick="runExperiment('condensation')" class="btn-3d btn-yellow w-full py-3 text-xl">ผสมสารเลย!</button>
+                                <button onclick="runCuteExperiment('condensation')" class="btn-3d btn-yellow w-full py-3 text-xl">ผสมสารเลย!</button>
                             </div>
                         </div>
 
@@ -624,7 +649,7 @@
             `;
         }
 
-        window.runExperiment = function(type) {
+        window.runCuteExperiment = function(type) {
             const resultBox = document.getElementById('lab-result');
             const flask = document.getElementById('lab-flask');
             
@@ -673,11 +698,10 @@
             }, 1500);
         }
 
-        // --- STREAMING_CHUNK: Cute Worksheet UI with Washi Tape... ---
         function renderWorksheet() {
-            const p = state.players[currentUser];
+            const p = appData.players[currentUser];
             const isDone = p.worksheet !== null;
-            const ans = p.worksheet || ['', '', ''];
+            const ans = Array.isArray(p.worksheet) ? p.worksheet : ['', '', ''];
 
             return `
                 <div class="w-full max-w-[800px] mx-auto anim-drop">
@@ -704,34 +728,30 @@
                         <form id="ws-form" onsubmit="submitWorksheet(event)">
                             <div class="mb-8">
                                 <label class="block font-bold text-xl text-slate-700 mb-3">๑. จงอธิบายความหมายของคำว่า "พอลิเมอร์" และ "มอนอเมอร์" ให้เข้าใจง่าย 📝</label>
-                                <textarea id="ws-q1" class="worksheet-input font-cute text-blue-700" rows="3" placeholder="พิมพ์คำตอบด้วยภาษาของหนูเองที่นี่..." ${isDone ? 'readonly' : 'required'}>${ans[0]}</textarea>
+                                <textarea id="ws-q1" class="worksheet-input font-cute text-blue-700" rows="3" placeholder="พิมพ์คำตอบด้วยภาษาของหนูเองที่นี่..." required>${ans[0] || ''}</textarea>
                             </div>
 
                             <div class="mb-8">
                                 <label class="block font-bold text-xl text-slate-700 mb-3">๒. ปฏิกิริยาแบบเติม กับ แบบควบแน่น ต่างกันยังไงนะ? (อธิบายจากที่ลองผสมสารดูสิ) 🧪</label>
-                                <textarea id="ws-q2" class="worksheet-input font-cute text-blue-700" rows="3" placeholder="พิมพ์คำตอบที่นี่..." ${isDone ? 'readonly' : 'required'}>${ans[1]}</textarea>
+                                <textarea id="ws-q2" class="worksheet-input font-cute text-blue-700" rows="3" placeholder="พิมพ์คำตอบที่นี่..." required>${ans[1] || ''}</textarea>
                             </div>
 
                             <div class="mb-8">
                                 <label class="block font-bold text-xl text-slate-700 mb-3">๓. ลองมองไปรอบตัว ยกตัวอย่างของที่ทำจากพอลิเมอร์มาสัก ๓ อย่างสิ 🔍</label>
-                                <textarea id="ws-q3" class="worksheet-input font-cute text-blue-700" rows="2" placeholder="เช่น ขวดน้ำ, ถุง..." ${isDone ? 'readonly' : 'required'}>${ans[2]}</textarea>
+                                <textarea id="ws-q3" class="worksheet-input font-cute text-blue-700" rows="2" placeholder="เช่น ขวดน้ำ, ถุง..." required>${ans[2] || ''}</textarea>
                             </div>
 
-                            ${!isDone ? `
-                                <div class="text-center mt-12 no-print">
-                                    <button type="submit" class="btn-3d btn-pink py-4 px-12 text-2xl">
-                                        <i class="fa-solid fa-paper-plane mr-2"></i> ส่งใบงานให้คุณครู!
-                                    </button>
-                                </div>
-                            ` : `
-                                <div class="text-center mt-10 no-print">
-                                    <div class="inline-block ${p.worksheetGraded ? 'bg-green-100 border-green-300 text-green-600' : 'bg-amber-100 border-amber-300 text-amber-600'} border-4 font-cute font-black text-2xl px-8 py-4 rounded-[2rem] transform -rotate-2">
-                                        ${p.worksheetGraded 
-                                            ? `<i class="fa-solid fa-check-circle mr-2"></i> ได้คะแนน ${p.worksheetScore} / 10 ยอดเยี่ยม!` 
-                                            : `<i class="fa-solid fa-hourglass-half mr-2"></i> ส่งเรียบร้อยแล้วจ้า! รอคุณครูตรวจนะ`}
+                            <div class="text-center mt-12 no-print">
+                                ${isDone && p.worksheetGraded ? `
+                                    <div class="inline-block bg-green-100 border-green-300 text-green-600 border-4 font-cute font-black text-2xl px-8 py-4 rounded-[2rem] mb-4">
+                                        <i class="fa-solid fa-check-circle mr-2"></i> ครูตรวจแล้ว ได้คะแนน ${p.worksheetScore} / 10 ยอดเยี่ยม!
                                     </div>
-                                </div>
-                            `}
+                                    <p class="text-slate-500 font-bold">*หากแก้ไขใบงานและส่งใหม่ สถานะการตรวจและคะแนนจะถูกล้างเพื่อให้ครูตรวจใหม่นะครับ</p>
+                                ` : ''}
+                                <button type="submit" class="btn-3d btn-pink py-4 px-12 text-2xl mt-4">
+                                    <i class="fa-solid fa-paper-plane mr-2"></i> ${isDone ? 'บันทึกการแก้ไขและส่งใหม่' : 'ส่งใบงานให้คุณครู!'}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -744,23 +764,23 @@
             const q2 = document.getElementById('ws-q2').value;
             const q3 = document.getElementById('ws-q3').value;
 
-            state.players[currentUser].worksheet = [q1, q2, q3];
-            state.players[currentUser].worksheetScore = null;
-            state.players[currentUser].worksheetGraded = false;
-            saveState();
+            // บันทึกลง Local Storage (รีเซ็ตคะแนนที่ตรวจแล้วด้วย ถ้าแก้ใหม่)
+            updatePlayer(currentUser, { worksheet: [q1, q2, q3], worksheetScore: null, worksheetGraded: false });
 
             Swal.fire({
                 title: '<span class="font-cute text-3xl text-green-500">ส่งสำเร็จ! เย้! 🎉</span>',
-                html: '<p class="text-slate-600 font-bold font-cute">เขียนได้เยี่ยมมาก รอคุณครูตรวจ แล้วไปลุยสอบรอบสุดท้ายได้เลย!</p>',
+                html: '<p class="text-slate-600 font-bold font-cute">ข้อมูลบันทึกไว้ในเครื่องแล้วจ้า กลับไปดูแผนที่ต่อได้เลย!</p>',
                 icon: 'success',
                 confirmButtonColor: '#22c55e',
                 customClass: { popup: 'rounded-3xl border-4 border-green-200 shadow-xl font-cute' }
             }).then(() => { render(); });
         }
 
-        // --- STREAMING_CHUNK: Teacher Dashboard UI... ---
         function renderTeacherDash() {
-            const players = Object.values(state.players);
+            // โหลดข้อมูลล่าสุด
+            appData = loadData();
+            const players = Object.values(appData.players);
+            
             let html = `
                 <div class="glass-panel p-6 md:p-10 border-t-8 border-t-indigo-400 w-full anim-drop">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-10 pb-6 border-b-4 border-dashed border-indigo-100">
@@ -768,13 +788,16 @@
                             <h2 class="text-4xl font-cute font-black text-indigo-500 flex items-center justify-center md:justify-start gap-3 mb-2">
                                 <i class="fa-solid fa-chart-line"></i> แผงควบคุม (Dashboard)
                             </h2>
-                            <p class="text-slate-500 font-bold text-lg">สรุปผลคะแนนน่ารักๆ ของนักเรียนทุกคน 📊</p>
+                            <p class="text-slate-500 font-bold text-lg">สรุปผลคะแนนของนักเรียนในเครื่องนี้ 📊</p>
                         </div>
                         <div class="flex flex-wrap justify-center gap-3 mt-6 md:mt-0">
+                            <button onclick="render()" class="bg-white border-2 border-slate-200 text-slate-600 hover:bg-slate-50 px-5 py-2.5 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
+                                <i class="fa-solid fa-rotate-right"></i> รีเฟรช
+                            </button>
                             <button onclick="exportExcel()" class="bg-white border-2 border-emerald-200 text-emerald-500 hover:bg-emerald-50 px-5 py-2.5 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
                                 <i class="fa-solid fa-file-excel"></i> โหลด Excel
                             </button>
-                            <button onclick="confirmClearData()" class="bg-white border-2 border-rose-200 text-rose-500 hover:bg-rose-50 px-5 py-2.5 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
+                            <button onclick="confirmClearDataDB()" class="bg-white border-2 border-rose-200 text-rose-500 hover:bg-rose-50 px-5 py-2.5 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
                                 <i class="fa-solid fa-trash"></i> ล้างห้องเรียน
                             </button>
                         </div>
@@ -795,26 +818,29 @@
             `;
 
             if (players.length === 0) {
-                html += `<tr><td colspan="5" class="text-center p-12 text-slate-400 font-bold text-lg">ยังไม่มีข้อมูลนักเรียนเข้ามาเลยจ้า~ 🏃‍♂️💨</td></tr>`;
+                html += `<tr><td colspan="5" class="text-center p-12 text-slate-400 font-bold text-lg">ยังไม่มีข้อมูลนักเรียนเล่นในเครื่องนี้เลยจ้า~ 🏃‍♂️💨</td></tr>`;
             } else {
                 players.forEach(p => {
                     const pre = p.preTest !== null ? p.preTest : '-';
                     const post = p.postTest !== null ? p.postTest : '-';
                     let progress = '-';
-                    let progressStyle = 'bg-slate-100 text-slate-500';
+                    let progressStyle = 'bg-slate-100 text-slate-500 border-2 border-slate-200';
                     
                     if (p.preTest !== null && p.postTest !== null) {
-                        const diff = p.postTest - p.preTest;
+                        const diff = Number(p.postTest) - Number(p.preTest);
                         if (diff > 0) { progress = `+${diff}`; progressStyle = 'text-green-600 bg-green-100 border-2 border-green-200'; }
                         else if (diff < 0) { progress = diff; progressStyle = 'text-rose-600 bg-rose-100 border-2 border-rose-200'; }
                         else { progress = '0'; progressStyle = 'text-slate-600 bg-slate-100 border-2 border-slate-200'; }
                     }
 
-                    const wsStatus = p.worksheet !== null 
-                        ? (p.worksheetGraded 
-                            ? `<button onclick="viewWorksheet('${p.name}')" class="bg-green-100 text-green-600 border-2 border-green-200 px-4 py-1.5 rounded-full font-bold hover:bg-green-200 transition-colors shadow-sm"><i class="fa-solid fa-check-circle mr-1"></i> ตรวจแล้ว (${p.worksheetScore})</button>`
-                            : `<button onclick="viewWorksheet('${p.name}')" class="bg-amber-100 text-amber-600 border-2 border-amber-200 px-4 py-1.5 rounded-full font-bold hover:bg-amber-200 transition-colors shadow-sm animate-pulse"><i class="fa-solid fa-hourglass-half mr-1"></i> รอตรวจ</button>`)
-                        : `<span class="bg-slate-100 text-slate-400 px-4 py-1.5 rounded-full font-bold border-2 border-slate-200">ยังไม่ส่ง</span>`;
+                    let wsStatus = `<span class="bg-slate-100 text-slate-400 px-4 py-1.5 rounded-full font-bold border-2 border-slate-200 text-sm">ยังไม่ส่ง</span>`;
+                    if (p.worksheet !== null) {
+                        if (p.worksheetGraded) {
+                            wsStatus = `<button onclick="viewWorksheet('${p.name}')" class="bg-green-100 text-green-600 border-2 border-green-200 px-4 py-1.5 rounded-full font-bold hover:bg-green-200 transition-colors shadow-sm text-sm"><i class="fa-solid fa-check-circle mr-1"></i> ตรวจแล้ว (${p.worksheetScore})</button>`;
+                        } else {
+                            wsStatus = `<button onclick="viewWorksheet('${p.name}')" class="bg-amber-100 text-amber-600 border-2 border-amber-200 px-4 py-1.5 rounded-full font-bold hover:bg-amber-200 transition-colors shadow-sm animate-pulse text-sm"><i class="fa-solid fa-hourglass-half mr-1"></i> รอตรวจ</button>`;
+                        }
+                    }
 
                     html += `
                         <tr class="hover:bg-indigo-50/50 transition-colors group">
@@ -828,7 +854,7 @@
                             <td class="p-5 text-center">${wsStatus}</td>
                             <td class="p-5 text-center font-black text-slate-500 text-xl">${post}</td>
                             <td class="p-5 text-center">
-                                ${progress !== '-' ? `<span class="px-4 py-1.5 rounded-full font-black text-lg ${progressStyle}">${progress}</span>` : '-'}
+                                <span class="px-4 py-1.5 rounded-full font-black text-lg ${progressStyle}">${progress}</span>
                             </td>
                         </tr>
                     `;
@@ -845,22 +871,22 @@
         }
 
         window.viewWorksheet = function(name) {
-            const p = state.players[name];
-            const ans = p.worksheet;
+            const p = appData.players[name];
+            const ans = Array.isArray(p.worksheet) ? p.worksheet : ['', '', ''];
             const currentScore = p.worksheetScore !== null ? p.worksheetScore : '';
             
             Swal.fire({
                 title: `<span class="font-cute text-3xl text-indigo-600">ตรวจใบงานของ ${name}</span>`,
                 html: `
-                    <div class="text-left font-cute text-slate-700 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')] bg-amber-50 p-6 rounded-2xl mt-4 border-2 border-amber-200 shadow-inner overflow-y-auto max-h-[60vh]">
+                    <div class="text-left font-cute text-slate-700 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')] bg-amber-50 p-6 rounded-2xl mt-4 border-2 border-amber-200 shadow-inner overflow-y-auto max-h-[50vh]">
                         <p class="font-bold text-lg text-rose-500 mb-2">๑. อธิบายความหมาย "พอลิเมอร์" และ "มอนอเมอร์"</p>
-                        <p class="mb-6 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl">${ans[0] || '-'}</p>
+                        <p class="mb-6 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl whitespace-pre-wrap">${ans[0] || '-'}</p>
                         
                         <p class="font-bold text-lg text-rose-500 mb-2">๒. ปฏิกิริยาแบบเติม กับ แบบควบแน่น ต่างกันยังไง?</p>
-                        <p class="mb-6 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl">${ans[1] || '-'}</p>
+                        <p class="mb-6 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl whitespace-pre-wrap">${ans[1] || '-'}</p>
                         
                         <p class="font-bold text-lg text-rose-500 mb-2">๓. ยกตัวอย่างของที่ทำจากพอลิเมอร์มา ๓ อย่าง</p>
-                        <p class="mb-8 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl">${ans[2] || '-'}</p>
+                        <p class="mb-8 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl whitespace-pre-wrap">${ans[2] || '-'}</p>
                         
                         <div class="bg-indigo-50 border-4 border-indigo-200 p-4 rounded-2xl flex flex-col items-center justify-center">
                             <label class="font-black text-indigo-500 text-xl mb-3">ให้คะแนนใบงาน (เต็ม 10)</label>
@@ -871,73 +897,60 @@
                 width: 700,
                 showCancelButton: true,
                 confirmButtonText: '<i class="fa-solid fa-check"></i> บันทึกคะแนน',
-                cancelButtonText: 'ปิดเฉยๆ',
+                cancelButtonText: 'ปิด',
                 confirmButtonColor: '#22c55e',
                 cancelButtonColor: '#94a3b8',
                 customClass: { popup: 'rounded-3xl border-4 border-indigo-200 shadow-2xl font-cute' },
                 preConfirm: () => {
                     const scoreInput = document.getElementById('grading-score').value;
-                    if(scoreInput === '') {
-                        Swal.showValidationMessage('กรุณาใส่คะแนนให้เด็กๆ ด้วยนะจ๊ะ');
-                        return false;
-                    }
-                    if(scoreInput < 0 || scoreInput > 10) {
-                        Swal.showValidationMessage('คะแนนต้องอยู่ระหว่าง 0 - 10 จ้า');
-                        return false;
-                    }
+                    if(scoreInput === '') { Swal.showValidationMessage('กรุณาใส่คะแนนให้เด็กๆ ด้วยนะจ๊ะ'); return false; }
+                    if(scoreInput < 0 || scoreInput > 10) { Swal.showValidationMessage('คะแนนต้องอยู่ระหว่าง 0 - 10 จ้า'); return false; }
                     return scoreInput;
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    state.players[name].worksheetScore = parseFloat(result.value);
-                    state.players[name].worksheetGraded = true;
-                    saveState();
+                    updatePlayer(name, { worksheetScore: Number(result.value), worksheetGraded: true });
                     render();
-                    Toast.fire({ icon: 'success', title: 'ตรวจงานและบันทึกคะแนนเรียบร้อย!', confirmButtonColor: '#10b981' });
+                    Toast.fire({ icon: 'success', title: 'บันทึกคะแนนเรียบร้อย!' });
                 }
             });
         }
 
         window.exportExcel = function() {
             let csv = '\uFEFF'; 
-            csv += 'ชื่อนักเรียน,คะแนนก่อนเรียน,การส่งใบงาน,คะแนนใบงาน,คะแนนหลังเรียน,พัฒนาการ\n';
+            csv += 'ชื่อนักเรียน,คะแนนก่อนเรียน (5),การส่งใบงาน,คะแนนใบงาน (10),คะแนนหลังเรียน (5),พัฒนาการ\n';
             
-            Object.values(state.players).forEach(p => {
+            Object.values(appData.players).forEach(p => {
                 const pre = p.preTest !== null ? p.preTest : '';
                 const post = p.postTest !== null ? p.postTest : '';
                 let wsStatus = 'ยังไม่ส่ง';
                 let wsScore = '';
                 if (p.worksheet !== null) {
-                    if (p.worksheetGraded) {
-                        wsStatus = 'ตรวจแล้ว';
-                        wsScore = p.worksheetScore;
-                    } else {
-                        wsStatus = 'รอตรวจ';
-                    }
+                    wsStatus = 'ส่งแล้ว';
+                    if (p.worksheetGraded) wsScore = p.worksheetScore;
                 }
                 
                 let diff = '';
-                if (p.preTest !== null && p.postTest !== null) {
-                    diff = p.postTest - p.preTest;
-                }
-                csv += `${p.name},${pre},${wsStatus},${wsScore},${post},${diff}\n`;
+                if (pre !== '' && post !== '') diff = Number(post) - Number(pre);
+                
+                csv += `"${p.name}",${pre},${wsStatus},${wsScore},${post},${diff}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'คะแนนนักเรียน_Polymer.csv';
+            link.download = 'รายงานคะแนน_พอลิเมอร์.csv';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            Toast.fire({ icon: 'success', title: 'โหลดเสร็จแล้ว!', text: 'ไฟล์ Excel บันทึกเรียบร้อยครับ', confirmButtonColor: '#10b981' });
+            Toast.fire({ icon: 'success', title: 'โหลด Excel สำเร็จ!' });
         }
 
-        window.confirmClearData = function() {
+        window.confirmClearDataDB = function() {
             Swal.fire({
                 title: '<span class="font-cute text-3xl text-rose-500">ล้างห้องเรียน?</span>',
-                html: '<p class="font-bold text-slate-500 font-cute">ข้อมูลทั้งหมดจะหายไปเลยนะ แน่ใจมั้ยเอ่ย?</p>',
+                html: '<p class="font-bold text-slate-500 font-cute">ข้อมูลทั้งหมดในเครื่องนี้จะถูกลบถาวร แน่ใจมั้ยเอ่ย?</p>',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
@@ -947,16 +960,16 @@
                 customClass: { popup: 'rounded-3xl border-4 border-rose-200 shadow-xl font-cute' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    state.players = {};
-                    saveState();
+                    // ล้างข้อมูลใน Local Storage
+                    appData = { players: {}, lastUser: '' };
+                    saveData(appData);
                     render();
-                    Toast.fire({ icon: 'success', title: 'ห้องเรียนสะอาดกริ๊บ!', confirmButtonColor: '#10b981' });
+                    Swal.fire({title: 'ห้องเรียนสะอาดกริ๊บ!', icon: 'success', customClass: { popup: 'rounded-3xl font-cute' }});
                 }
             });
         }
 
         // เริ่มต้นระบบ
-        loadState();
         render();
     </script>
 </body>
