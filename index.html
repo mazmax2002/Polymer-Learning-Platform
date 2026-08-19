@@ -11,7 +11,7 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Mali:wght@400;600;700&family=Chakra+Petch:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Mali:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -57,6 +57,14 @@
             transform: translateY(6px);
             border-bottom-width: 0px;
             margin-top: 6px;
+        }
+        .btn-3d:disabled {
+            filter: grayscale(1);
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            border-bottom-width: 6px !important;
+            margin-top: 0 !important;
         }
         
         .btn-pink { background: linear-gradient(145deg, #fb7185, #f43f5e); border-color: #be123c; color: white; }
@@ -161,7 +169,7 @@
     <div class="fixed bottom-20 left-1/4 text-6xl opacity-30 anim-float pointer-events-none z-0" style="animation-delay: 2.2s;">🌸</div>
     <div class="fixed bottom-32 right-10 text-7xl opacity-20 anim-float pointer-events-none z-0" style="animation-delay: 0.8s;">🧪</div>
 
-    <!-- Top Navigation (แบบลอยตัว น่ารัก) -->
+    <!-- Top Navigation -->
     <div class="no-print p-4 w-full max-w-7xl mx-auto relative z-50">
         <nav class="glass-panel px-6 py-4 flex justify-between items-center shadow-lg">
             <div class="flex items-center gap-4">
@@ -183,9 +191,9 @@
     <script>
         // =========================================================================
         // OFFLINE MODE (Local Storage Only)
-        // ระบบนี้จะบันทึกข้อมูลทุกอย่างไว้ในเครื่อง (เบราว์เซอร์) ไม่ต้องพึ่งอินเทอร์เน็ต
+        // บันทึกข้อมูลทุกอย่างไว้ในเครื่อง ปลอดภัย ไม่ต้องพึ่งเน็ต
         // =========================================================================
-        const STORAGE_KEY = 'polymer_cute_app_data';
+        const STORAGE_KEY = 'polymer_cute_app_data_v2'; // เปลี่ยน key เพื่อเริ่มตารางใหม่ที่รองรับ 6 ด่าน
 
         // โหลดข้อมูลเริ่มต้นจาก Local Storage
         function loadData() {
@@ -198,12 +206,12 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(dataObj));
         }
 
-        // สถานะของแอพ
+        // ตัวแปรเก็บสถานะแอพ
         let appData = loadData();
         let state = { status: 'login' };
         let currentUser = null;
 
-        // คำถามสำหรับทดสอบ
+        // คำถามสำหรับทดสอบ (ก่อน/หลังเรียน)
         const questions = [
             { q: "ข้อใดคือความหมายของพอลิเมอร์?", options: ["สารโมเลกุลใหญ่ที่เกิดจากมอนอเมอร์ต่อกัน", "สารละลายเข้มข้น", "ธาตุหมู่ 8", "สารที่พบในพลาสติกเท่านั้น"], a: 0 },
             { q: "ปฏิกิริยาการเกิดพอลิเมอร์แบบเติม มีลักษณะอย่างไร?", options: ["มีน้ำหลุดออกมา", "มอนอเมอร์มีพันธะคู่และไม่มีสารอื่นหลุดออกมา", "ต้องใช้ความเย็นสูง", "เกิดเป็นโครงร่างตาข่ายเสมอ"], a: 1 },
@@ -212,24 +220,25 @@
             { q: "พลาสติกที่ใช้ทำขวดน้ำดื่ม (PET) เป็นพอลิเมอร์ประเภทใด?", options: ["แบบเติม", "แบบควบแน่น", "แบบร่างแห", "ยางธรรมชาติ"], a: 1 }
         ];
 
+        // แจ้งเตือนน่ารักๆ
         const Toast = Swal.mixin({ 
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
             customClass: { popup: 'rounded-2xl border-2 border-pink-100 shadow-xl font-cute' } 
         });
 
-        // ฟังก์ชันบันทึกข้อมูลของนักเรียน (ออฟไลน์)
+        // ฟังก์ชันอัปเดตข้อมูลนักเรียน
         function updatePlayer(playerName, updatePayload) {
             if (!appData.players[playerName]) {
                 appData.players[playerName] = { 
                     name: playerName, 
                     preTest: null, 
-                    postTest: null, 
+                    labDone: false,
+                    recycleDone: false,
+                    recycleScore: null,
                     worksheet: null, 
                     worksheetScore: null, 
-                    worksheetGraded: false 
+                    worksheetGraded: false,
+                    postTest: null 
                 };
             }
             Object.assign(appData.players[playerName], updatePayload);
@@ -248,6 +257,7 @@
             render();
         }
 
+        // ตัวเรนเดอร์หน้าจอหลัก
         function render() {
             const app = document.getElementById('app-content');
             const navUser = document.getElementById('nav-user-info');
@@ -285,7 +295,6 @@
         function renderLogin() {
             return `
                 <div class="flex flex-col items-center justify-center w-full max-w-lg mx-auto anim-drop">
-                    <!-- การ์ดหลักตรงกลาง -->
                     <div class="glass-panel p-8 w-full border-t-[8px] border-t-pink-400 flex flex-col items-center shadow-2xl relative">
                         <div class="absolute -top-12 bg-white rounded-full p-4 shadow-md border-4 border-pink-100">
                             <i class="fa-solid fa-graduation-cap text-6xl text-pink-400"></i>
@@ -305,7 +314,6 @@
                         </button>
                     </div>
 
-                    <!-- ปุ่มสำหรับครูแยกมาด้านล่าง -->
                     <div class="mt-8">
                         <button onclick="promptTeacherLogin()" class="bg-white/80 backdrop-blur-sm border-2 border-indigo-100 text-indigo-500 hover:bg-indigo-50 px-8 py-3 rounded-full font-bold shadow-sm transition-all flex items-center gap-2">
                             <i class="fa-solid fa-key"></i> เข้าสู่ระบบสำหรับคุณครู
@@ -324,12 +332,12 @@
                 return;
             }
             
-            // ตรวจสอบหรือสร้างโปรไฟล์ใหม่
+            // สร้างหรืออัปเดตผู้ใช้
             if (!appData.players[name]) {
-                updatePlayer(name, {}); // สร้างใหม่เปล่าๆ
+                updatePlayer(name, {}); 
             } else {
                 appData.lastUser = name;
-                saveData(appData); // อัปเดตผู้ใช้ล่าสุด
+                saveData(appData); 
             }
             
             currentUser = name;
@@ -365,84 +373,98 @@
         function renderStudentHub() {
             const p = appData.players[currentUser];
             const preDone = p.preTest !== null;
+            const labDone = p.labDone === true;
+            const recycleDone = p.recycleDone === true;
             const wsDone = p.worksheet !== null;
             const postDone = p.postTest !== null;
 
             return `
-                <div class="text-center mb-10 anim-drop">
-                    <h2 class="text-4xl md:text-5xl font-cute font-black text-rose-500 drop-shadow-sm">แผนที่ภารกิจ 🗺️</h2>
+                <div class="text-center mb-8 anim-drop">
+                    <h2 class="text-4xl md:text-5xl font-cute font-black text-rose-500 drop-shadow-sm">แผนที่ภารกิจ (6 ด่าน) 🗺️</h2>
                     <p class="text-slate-600 mt-2 font-bold text-lg">ทำภารกิจตามลำดับให้ครบ เพื่อเป็นอัจฉริยะพอลิเมอร์!</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 anim-drop max-w-5xl mx-auto" style="animation-delay: 0.1s;">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 anim-drop max-w-6xl mx-auto" style="animation-delay: 0.1s;">
                     
-                    <!-- 1. ทดสอบก่อนเรียน (Pink) -->
+                    <!-- 1. ก่อนเรียน (Pink) -->
                     <div class="glass-panel p-6 border-t-8 ${preDone ? 'border-t-green-400 bg-green-50/30' : 'border-t-pink-400'} flex flex-col items-center text-center group">
-                        <div class="w-20 h-20 rounded-full bg-white border-4 ${preDone ? 'border-green-300 text-green-500' : 'border-pink-200 text-pink-500'} flex items-center justify-center text-4xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                        <div class="w-16 h-16 rounded-full bg-white border-4 ${preDone ? 'border-green-300 text-green-500' : 'border-pink-200 text-pink-500'} flex items-center justify-center text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
                             ${preDone ? '<i class="fa-solid fa-check"></i>' : '📝'}
                         </div>
-                        <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๑. วัดความรู้</h3>
-                        <p class="text-sm font-bold text-slate-500 mb-4 flex-1">ก่อนเรียนทำได้แค่ไหน ไม่ต้องกลัวผิด</p>
+                        <h3 class="text-xl font-cute font-bold text-slate-700 mb-2">๑. วัดความรู้</h3>
+                        <p class="text-sm font-bold text-slate-500 mb-4 flex-1">ทดสอบก่อนเรียน มี 5 ข้อ</p>
                         ${preDone 
-                            ? `<div class="font-black text-green-500 text-2xl mb-2 flex items-center gap-2">⭐ ${p.preTest} / 5</div>
-                               <button onclick="startActivity('quiz', 'pre')" class="text-slate-400 underline font-bold text-sm hover:text-pink-500">ทำใหม่</button>`
-                            : `<button onclick="startActivity('quiz', 'pre')" class="w-full btn-3d btn-pink py-3 text-lg">เริ่มทำควิซ!</button>`
+                            ? `<div class="font-black text-green-500 text-xl mb-2 flex items-center gap-2">⭐ ${p.preTest} / 5</div>
+                               <button onclick="startActivity('quiz', 'pre')" class="text-slate-400 underline font-bold text-xs hover:text-pink-500">ทำใหม่</button>`
+                            : `<button onclick="startActivity('quiz', 'pre')" class="w-full btn-3d btn-pink py-2 text-base">เริ่มทำควิซ!</button>`
                         }
                     </div>
 
-                    <!-- 2. เรียนรู้เนื้อหา (Sky) -->
+                    <!-- 2. บทเรียน (Sky) -->
                     <div class="glass-panel p-6 border-t-8 border-t-sky-400 flex flex-col items-center text-center group ${!preDone ? 'opacity-60 grayscale' : ''}">
-                        <div class="w-20 h-20 rounded-full bg-white border-4 border-sky-200 text-sky-500 flex items-center justify-center text-4xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                        <div class="w-16 h-16 rounded-full bg-white border-4 border-sky-200 text-sky-500 flex items-center justify-center text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
                             📖
                         </div>
-                        <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๒. บทเรียน & วิดีโอ</h3>
-                        <p class="text-sm font-bold text-slate-500 mb-4 flex-1">อ่านสรุปความรู้และดูวิดีโอสอน</p>
-                        <button onclick="${preDone ? `startActivity('lesson')` : `Toast.fire({icon:'info', title:'ต้องทำแบบทดสอบก่อนเรียนก่อนนะ'})`}" class="w-full btn-3d btn-sky py-3 text-lg">
+                        <h3 class="text-xl font-cute font-bold text-slate-700 mb-2">๒. บทเรียน & วิดีโอ</h3>
+                        <p class="text-sm font-bold text-slate-500 mb-4 flex-1">อ่านสรุปความรู้เรื่องพอลิเมอร์</p>
+                        <button onclick="${preDone ? `startActivity('lesson')` : `Toast.fire({icon:'warning', title:'ทำข้อ 1 ให้เสร็จก่อนนะ'})`}" class="w-full btn-3d btn-sky py-2 text-base">
                             ${preDone ? 'เปิดตำรา' : '<i class="fa-solid fa-lock"></i> ล็อค'}
                         </button>
                     </div>
 
-                    <!-- 3. ห้องทดลอง (Purple) -->
-                    <div class="glass-panel p-6 border-t-8 border-t-purple-400 flex flex-col items-center text-center group ${!preDone ? 'opacity-60 grayscale' : ''}">
-                        <div class="w-20 h-20 rounded-full bg-white border-4 border-purple-200 text-purple-500 flex items-center justify-center text-4xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
-                            🧪
+                    <!-- 3. ห้องวิจัย (Purple) -->
+                    <div class="glass-panel p-6 border-t-8 ${labDone ? 'border-t-green-400 bg-green-50/30' : 'border-t-purple-400'} flex flex-col items-center text-center group ${!preDone ? 'opacity-60 grayscale' : ''}">
+                        <div class="w-16 h-16 rounded-full bg-white border-4 ${labDone ? 'border-green-300 text-green-500' : 'border-purple-200 text-purple-500'} flex items-center justify-center text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                            ${labDone ? '<i class="fa-solid fa-check"></i>' : '🧪'}
                         </div>
-                        <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๓. ห้องวิจัย</h3>
-                        <p class="text-sm font-bold text-slate-500 mb-4 flex-1">ผสมสารจำลอง ดูปฏิกิริยาพอลิเมอร์</p>
-                        <button onclick="${preDone ? `startActivity('lab')` : `Toast.fire({icon:'info', title:'ต้องทำแบบทดสอบก่อนเรียนก่อนนะ'})`}" class="w-full btn-3d btn-purple py-3 text-lg">
-                            ${preDone ? 'สวมเสื้อกาวน์' : '<i class="fa-solid fa-lock"></i> ล็อค'}
+                        <h3 class="text-xl font-cute font-bold text-slate-700 mb-2">๓. ห้องวิจัย</h3>
+                        <p class="text-sm font-bold text-slate-500 mb-4 flex-1">จำลองการเกิดสายพอลิเมอร์</p>
+                        <button onclick="${preDone ? `startActivity('lab')` : `Toast.fire({icon:'warning', title:'ทำข้อ 1 ให้เสร็จก่อนนะ'})`}" class="w-full btn-3d btn-purple py-2 text-base">
+                            ${preDone ? (labDone ? 'ทบทวนการทดลอง' : 'สวมเสื้อกาวน์') : '<i class="fa-solid fa-lock"></i> ล็อค'}
                         </button>
                     </div>
 
-                    <!-- 4. ใบงานออนไลน์ (Orange/Yellow) -->
-                    <div class="glass-panel p-6 border-t-8 ${wsDone ? 'border-t-green-400 bg-green-50/30' : 'border-t-yellow-400'} flex flex-col items-center text-center group md:col-start-1 lg:col-start-2 ${!preDone ? 'opacity-60 grayscale' : ''}">
-                        <div class="w-20 h-20 rounded-full bg-white border-4 ${wsDone ? 'border-green-300 text-green-500' : 'border-yellow-200 text-yellow-500'} flex items-center justify-center text-4xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                    <!-- 4. รีไซเคิล (Green) -->
+                    <div class="glass-panel p-6 border-t-8 ${recycleDone ? 'border-t-green-400 bg-green-50/30' : 'border-t-emerald-400'} flex flex-col items-center text-center group ${!preDone ? 'opacity-60 grayscale' : ''}">
+                        <div class="w-16 h-16 rounded-full bg-white border-4 ${recycleDone ? 'border-green-300 text-green-500' : 'border-emerald-200 text-emerald-500'} flex items-center justify-center text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                            ${recycleDone ? '<i class="fa-solid fa-check"></i>' : '♻️'}
+                        </div>
+                        <h3 class="text-xl font-cute font-bold text-slate-700 mb-2">๔. โรงงานรีไซเคิล</h3>
+                        <p class="text-sm font-bold text-slate-500 mb-4 flex-1">แยกขยะให้ถูกถัง สะสม 10 แต้ม!</p>
+                        <button onclick="${preDone ? `startActivity('recycle')` : `Toast.fire({icon:'warning', title:'ทำข้อ 1 ให้เสร็จก่อนนะ'})`}" class="w-full btn-3d btn-green py-2 text-base">
+                            ${preDone ? (recycleDone ? 'เล่นเกมอีกครั้ง' : 'เล่นเกมแยกขยะ') : '<i class="fa-solid fa-lock"></i> ล็อค'}
+                        </button>
+                    </div>
+
+                    <!-- 5. ใบงาน (Yellow) -->
+                    <div class="glass-panel p-6 border-t-8 ${wsDone ? 'border-t-green-400 bg-green-50/30' : 'border-t-yellow-400'} flex flex-col items-center text-center group ${!recycleDone ? 'opacity-60 grayscale' : ''}">
+                        <div class="w-16 h-16 rounded-full bg-white border-4 ${wsDone ? 'border-green-300 text-green-500' : 'border-yellow-200 text-yellow-500'} flex items-center justify-center text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
                             ${wsDone ? '<i class="fa-solid fa-check"></i>' : '✍️'}
                         </div>
-                        <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๔. ใบงาน</h3>
+                        <h3 class="text-xl font-cute font-bold text-slate-700 mb-2">๕. ใบงาน</h3>
                         <p class="text-sm font-bold text-slate-500 mb-4 flex-1">สรุปความเข้าใจ พิมพ์ส่งคุณครู</p>
                         ${wsDone 
-                            ? `<div class="font-black ${p.worksheetGraded ? 'text-green-500 bg-green-100 border-green-200' : 'text-amber-500 bg-amber-100 border-amber-200'} text-xl mb-2 px-4 py-1 rounded-full border-2">
-                                ${p.worksheetGraded ? `⭐ ได้คะแนน ${p.worksheetScore}/10` : '<i class="fa-solid fa-hourglass-half"></i> รอคุณครูตรวจ'}
+                            ? `<div class="font-black ${p.worksheetGraded ? 'text-green-500 bg-green-100 border-green-200' : 'text-amber-500 bg-amber-100 border-amber-200'} text-sm mb-2 px-3 py-1 rounded-full border-2">
+                                ${p.worksheetGraded ? `⭐ ได้คะแนน ${p.worksheetScore}/10` : '<i class="fa-solid fa-hourglass-half"></i> รอครูตรวจ'}
                                </div>
-                               <button onclick="startActivity('worksheet')" class="bg-white border-2 border-slate-200 text-slate-600 px-4 py-2 rounded-full text-sm font-bold shadow-sm hover:border-pink-300"><i class="fa-solid fa-eye"></i> ดูใบงาน / แก้ไข</button>`
-                            : `<button onclick="${preDone ? `startActivity('worksheet')` : `Toast.fire({icon:'info', title:'ต้องทำทดสอบก่อนเรียนก่อนนะ'})`}" class="w-full btn-3d btn-yellow py-3 text-lg">
-                                ${preDone ? 'เขียนใบงาน' : '<i class="fa-solid fa-lock"></i> ล็อค'}
+                               <button onclick="startActivity('worksheet')" class="bg-white border-2 border-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm hover:border-pink-300">ดู / แก้ไข</button>`
+                            : `<button onclick="${recycleDone ? `startActivity('worksheet')` : `Toast.fire({icon:'warning', title:'ต้องผ่านเกมแยกขยะข้อ 4 ก่อนนะ'})`}" class="w-full btn-3d btn-yellow py-2 text-base">
+                                ${recycleDone ? 'เขียนใบงาน' : '<i class="fa-solid fa-lock"></i> ล็อค'}
                                </button>`
                         }
                     </div>
 
-                    <!-- 5. ทดสอบหลังเรียน (Blue) -->
+                    <!-- 6. หลังเรียน (Blue) -->
                     <div class="glass-panel p-6 border-t-8 ${postDone ? 'border-t-green-400 bg-green-50/30' : 'border-t-blue-400'} flex flex-col items-center text-center group ${!wsDone ? 'opacity-60 grayscale' : ''}">
-                        <div class="w-20 h-20 rounded-full bg-white border-4 ${postDone ? 'border-green-300 text-green-500' : 'border-blue-200 text-blue-500'} flex items-center justify-center text-4xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                        <div class="w-16 h-16 rounded-full bg-white border-4 ${postDone ? 'border-green-300 text-green-500' : 'border-blue-200 text-blue-500'} flex items-center justify-center text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform">
                             ${postDone ? '<i class="fa-solid fa-check"></i>' : '🏆'}
                         </div>
-                        <h3 class="text-2xl font-cute font-bold text-slate-700 mb-2">๕. วัดผลอีกที</h3>
+                        <h3 class="text-xl font-cute font-bold text-slate-700 mb-2">๖. วัดผลอีกที</h3>
                         <p class="text-sm font-bold text-slate-500 mb-4 flex-1">สอบเก็บคะแนนเพื่อดูความก้าวหน้า!</p>
                         ${postDone 
-                            ? `<div class="font-black text-blue-500 text-3xl mb-2 flex items-center gap-2">⭐ ${p.postTest} / 5</div>
-                               <button onclick="startActivity('quiz', 'post')" class="text-slate-400 underline font-bold text-sm hover:text-blue-500">สอบใหม่</button>`
-                            : `<button onclick="${wsDone ? `startActivity('quiz', 'post')` : `Toast.fire({icon:'info', title:'ต้องส่งใบงานก่อนถึงจะสอบได้นะ'})`}" class="w-full btn-3d btn-blue py-3 text-lg">
+                            ? `<div class="font-black text-blue-500 text-2xl mb-2 flex items-center gap-2">⭐ ${p.postTest} / 5</div>
+                               <button onclick="startActivity('quiz', 'post')" class="text-slate-400 underline font-bold text-xs hover:text-blue-500">สอบใหม่</button>`
+                            : `<button onclick="${wsDone ? `startActivity('quiz', 'post')` : `Toast.fire({icon:'warning', title:'ต้องส่งใบงานข้อ 5 ก่อนถึงจะสอบได้นะ'})`}" class="w-full btn-3d btn-blue py-2 text-base">
                                 ${wsDone ? 'สอบไฟนอล!' : '<i class="fa-solid fa-lock"></i> ล็อค'}
                                </button>`
                         }
@@ -456,6 +478,7 @@
             if (type === 'quiz') app.innerHTML = renderCuteQuiz(params);
             if (type === 'lesson') app.innerHTML = renderLesson();
             if (type === 'lab') app.innerHTML = renderCuteLab();
+            if (type === 'recycle') app.innerHTML = renderRecycleFactory();
             if (type === 'worksheet') app.innerHTML = renderWorksheet();
         }
 
@@ -469,11 +492,10 @@
                     <div class="glass-panel p-6 md:p-10 border-t-8 border-t-sky-400">
                         <h2 class="text-3xl md:text-4xl font-black font-cute text-sky-500 mb-8 text-center"><i class="fa-solid fa-book-open"></i> บทเรียนเรื่อง พอลิเมอร์</h2>
                         
-                        <!-- Video Section -->
                         <div class="bg-white p-4 md:p-6 rounded-3xl shadow-sm border-4 border-sky-100 mb-10">
                             <h3 class="text-2xl font-cute font-bold text-slate-700 mb-4 text-center">🎥 วิดีโอ</h3>
                             <div class="video-container">
-                                <!-- ใช้ HTML5 Video เปิดไฟล์ในเครื่อง -->
+                                <!-- เปลี่ยนเป็นลิงก์ Youtube หรือใส่ src เป็นไฟล์ mp4 ในเครื่องได้ -->
                                 <video controls class="absolute top-0 left-0 w-full h-full object-contain">
                                     <source src="Polymer คืออะไร_.mp4" type="video/mp4">
                                     เบราว์เซอร์ของคุณไม่รองรับการแสดงผลวิดีโอนี้
@@ -481,7 +503,6 @@
                             </div>
                         </div>
 
-                        <!-- Reading Section -->
                         <div class="space-y-6 text-slate-700 font-bold text-lg leading-relaxed">
                             <div class="bg-pink-50 p-6 rounded-3xl border-l-8 border-pink-400 shadow-sm">
                                 <h4 class="text-2xl font-cute font-black text-pink-600 mb-2">๑. พอลิเมอร์ (Polymer) คืออะไร?</h4>
@@ -503,7 +524,7 @@
 
                         <div class="mt-10 text-center">
                             <button onclick="render()" class="btn-3d btn-sky px-12 py-4 text-2xl font-cute">
-                                <i class="fa-solid fa-check"></i> อ่านจบแล้ว! กลับไปลุยต่อ
+                                <i class="fa-solid fa-check"></i> อ่านจบแล้ว!
                             </button>
                         </div>
                     </div>
@@ -512,12 +533,12 @@
         }
 
         let currentQ = 0;
-        let score = 0;
+        let quizScore = 0;
         let quizType = '';
 
         function renderCuteQuiz(type) {
             currentQ = 0;
-            score = 0;
+            quizScore = 0;
             quizType = type;
             setTimeout(showQuestion, 100);
             return `
@@ -540,13 +561,12 @@
             if (currentQ >= questions.length) {
                 // จบแบบทดสอบ บันทึกคะแนนลง Local Storage
                 const updateData = {};
-                updateData[quizType + 'Test'] = score;
+                updateData[quizType + 'Test'] = quizScore;
                 updatePlayer(currentUser, updateData);
                 
                 const title = quizType === 'pre' ? 'สุดยอด! เสร็จก้าวแรกแล้ว' : 'ฉลองงง! เรียนจบแล้วจ้า';
                 const color = quizType === 'pre' ? 'text-pink-500' : 'text-blue-500';
                 
-                // เอฟเฟกต์พลุจุดฉลองง่ายๆ
                 Toast.fire({ icon: 'success', title: 'บันทึกคะแนนเรียบร้อยแล้ว!' });
 
                 container.innerHTML = `
@@ -555,7 +575,7 @@
                         <h2 class="text-4xl font-cute font-black mb-4 ${color}">${title}</h2>
                         <div class="bg-white inline-block px-10 py-6 rounded-[2rem] shadow-sm border-4 border-white mb-8">
                             <p class="text-xl text-slate-500 font-bold mb-2">หนูได้คะแนน</p>
-                            <p class="text-6xl font-black ${color}">⭐ ${score} / 5</p>
+                            <p class="text-6xl font-black ${color}">⭐ ${quizScore} / 5</p>
                         </div>
                         <div>
                             <button onclick="render()" class="btn-3d btn-green px-12 py-4 text-2xl"><i class="fa-solid fa-map-location-dot"></i> กลับไปแผนที่</button>
@@ -566,7 +586,6 @@
             }
 
             const q = questions[currentQ];
-            // สีปุ่มพาสเทล 4 สีแบบน่ารักๆ
             const btnColors = ['bg-rose-100 border-rose-300 text-rose-700', 'bg-blue-100 border-blue-300 text-blue-700', 'bg-yellow-100 border-yellow-400 text-yellow-800', 'bg-emerald-100 border-emerald-300 text-emerald-800'];
             const hoverColors = ['hover:bg-rose-200', 'hover:bg-blue-200', 'hover:bg-yellow-200', 'hover:bg-emerald-200'];
 
@@ -589,7 +608,7 @@
         }
 
         window.checkAnswer = function(selected, correct) {
-            if (selected === correct) score++;
+            if (selected === correct) quizScore++;
             currentQ++;
             showQuestion();
         }
@@ -636,13 +655,16 @@
                         </div>
 
                         <!-- โถทดลองแสดงผล -->
-                        <div class="bg-slate-800 rounded-[2.5rem] p-8 relative overflow-hidden flex flex-col items-center justify-center min-h-[280px] border-8 border-slate-700 shadow-[inset_0_20px_50px_rgba(0,0,0,0.5)]">
+                        <div class="bg-slate-800 rounded-[2.5rem] p-8 relative overflow-hidden flex flex-col items-center justify-center min-h-[280px] border-8 border-slate-700 shadow-[inset_0_20px_50px_rgba(0,0,0,0.5)] mb-8">
                             <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.1),transparent)] pointer-events-none"></div>
-                            
                             <div id="lab-flask" class="text-[7rem] text-white opacity-10 mb-4 transition-all duration-300 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">🧪</div>
                             <div id="lab-result" class="text-center z-10 w-full h-full flex flex-col items-center justify-center min-h-[120px]">
                                 <p class="text-slate-500 font-bold text-xl">... รอดูผลลัพธ์ตรงนี้นะ ...</p>
                             </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button onclick="finishLab()" class="btn-3d btn-purple px-12 py-3 text-xl">บันทึกผลการทดลอง & กลับแผนที่</button>
                         </div>
                     </div>
                 </div>
@@ -698,10 +720,254 @@
             }, 1500);
         }
 
+        window.finishLab = function() {
+            updatePlayer(currentUser, { labDone: true });
+            Toast.fire({ icon: 'success', title: 'ผ่านการทดลองแล้ว!' });
+            render();
+        }
+
+        const trashItems = [
+            { name: "ขวดน้ำดื่มใส", type: 1, icon: "💧" },
+            { name: "ขวดซอสปรุงรส", type: 1, icon: "🍶" },
+            { name: "ขวดแชมพูทึบ", type: 2, icon: "🧴" },
+            { name: "แกลลอนน้ำยาล้างจาน", type: 2, icon: "🧼" },
+            { name: "ท่อพีวีซี", type: 3, icon: "🚰" },
+            { name: "สายยางฉีดน้ำ", type: 3, icon: "🐍" },
+            { name: "ถุงพลาสติกหูหิ้ว", type: 4, icon: "🛍️" },
+            { name: "แผ่นฟิล์มแรปอาหาร", type: 4, icon: "🌯" },
+            { name: "กล่องใส่อาหารเข้าเวฟได้", type: 5, icon: "🍱" },
+            { name: "หลอดดูดน้ำพลาสติก", type: 5, icon: "🥤" },
+            { name: "แก้วกาแฟโฟม", type: 6, icon: "☕" },
+            { name: "กล่องโฟมใส่อาหาร", type: 6, icon: "🥡" },
+            { name: "ซองขนมกรุบกรอบ", type: 7, icon: "🍬" },
+            { name: "ซองกาแฟ 3in1", type: 7, icon: "☕" }
+        ];
+        
+        let currentTrashItem = null;
+        let recycleGameScore = 0;
+        let recycleGameCount = 0; // เพิ่มตัวแปรนับจำนวนข้อที่เล่นไปแล้ว
+
+        function renderRecycleFactory() {
+            setTimeout(() => { switchRecycleTab('knowledge'); }, 50); // Default tab
+
+            return `
+                <div class="max-w-4xl mx-auto w-full anim-drop">
+                    <button onclick="render()" class="mb-6 bg-white border-2 border-white shadow-sm text-slate-600 px-5 py-2 rounded-full font-bold hover:text-emerald-500 hover:border-emerald-200 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> กลับไปแผนที่
+                    </button>
+
+                    <div class="glass-panel p-6 md:p-10 border-t-8 border-t-emerald-400">
+                        <h2 class="text-3xl font-bold font-cute text-emerald-500 mb-6 text-center">♻️ โรงงานคัดแยกและรีไซเคิลพลาสติก</h2>
+                        
+                        <div class="flex justify-center gap-4 mb-8">
+                            <button onclick="switchRecycleTab('knowledge')" id="tab-knowledge" class="bg-emerald-500 text-white px-6 py-2 rounded-full font-bold shadow-md transition-all">📚 สัญลักษณ์พลาสติก 1-7</button>
+                            <button onclick="switchRecycleTab('game')" id="tab-game" class="bg-white text-slate-600 px-6 py-2 rounded-full font-bold shadow-md hover:bg-slate-50 transition-all border-2 border-slate-100">🎮 เกมแยกขยะ</button>
+                        </div>
+
+                        <!-- คลังความรู้ -->
+                        <div id="recycle-knowledge" class="space-y-4">
+                            <div class="bg-white p-5 rounded-2xl border-l-8 border-blue-400 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                <div class="flex flex-col items-center justify-center min-w-[80px]">
+                                    <div class="text-6xl text-blue-500 leading-none">♳</div>
+                                    <div class="font-black text-blue-600 mt-2 text-sm">PETE</div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl text-blue-600 mb-1">1. เพท (PETE) - ขวดน้ำดื่มใส</h3>
+                                    <p class="text-slate-600 text-sm"><strong>ลดการใช้:</strong> พกกระบอกน้ำส่วนตัวเพื่อลดการซื้อขวดใหม่<br><strong>การรีไซเคิล:</strong> นำไปหลอมเป็นเส้นใยทำเสื้อผ้า หรือพรม</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-8 border-green-400 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                <div class="flex flex-col items-center justify-center min-w-[80px]">
+                                    <div class="text-6xl text-green-500 leading-none">♴</div>
+                                    <div class="font-black text-green-600 mt-2 text-sm">HDPE</div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl text-green-600 mb-1">2. HDPE (เอชดีพีอี) - ขวดแชมพูทึบ</h3>
+                                    <p class="text-slate-600 text-sm"><strong>ลดการใช้:</strong> ซื้อแบบถุงเติม (Refill) แทนการซื้อขวดใหม่<br><strong>การรีไซเคิล:</strong> นำไปหลอมทำขวดน้ำยาซักผ้า, ท่อพลาสติก, ถังขยะ</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-8 border-red-400 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                <div class="flex flex-col items-center justify-center min-w-[80px]">
+                                    <div class="text-6xl text-red-500 leading-none">♵</div>
+                                    <div class="font-black text-red-600 mt-2 text-sm">PVC</div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl text-red-600 mb-1">3. PVC (พีวีซี) - ท่อน้ำ, สายยาง</h3>
+                                    <p class="text-slate-600 text-sm"><strong>ลดการใช้:</strong> ใช้ให้คุ้มค่าที่สุด *ห้ามเผาเด็ดขาดเพราะเกิดก๊าซพิษ*<br><strong>การรีไซเคิล:</strong> นำไปทำท่อน้ำการเกษตร, กรวยจราจร (รีไซเคิลยาก)</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-8 border-yellow-400 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                <div class="flex flex-col items-center justify-center min-w-[80px]">
+                                    <div class="text-6xl text-yellow-500 leading-none">♶</div>
+                                    <div class="font-black text-yellow-600 mt-2 text-sm">LDPE</div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl text-yellow-500 mb-1">4. LDPE (แอลดีพีอี) - ถุงหูหิ้ว</h3>
+                                    <p class="text-slate-600 text-sm"><strong>ลดการใช้:</strong> ใช้ถุงผ้าแทนถุงพลาสติก, ใช้กล่องใส่อาหาร<br><strong>การรีไซเคิล:</strong> นำไปทำถุงขยะดำ, แผ่นฟิล์ม</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-8 border-purple-400 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                <div class="flex flex-col items-center justify-center min-w-[80px]">
+                                    <div class="text-6xl text-purple-500 leading-none">♷</div>
+                                    <div class="font-black text-purple-600 mt-2 text-sm">PP</div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl text-purple-600 mb-1">5. PP (พีพี) - กล่องใส่อาหาร, ถุงร้อน</h3>
+                                    <p class="text-slate-600 text-sm"><strong>ลดการใช้:</strong> ล้างทำความสะอาดกล่องอาหารแล้วนำกลับมาใช้ซ้ำ<br><strong>การรีไซเคิล:</strong> นำไปทำชิ้นส่วนรถยนต์, กล่องแบตเตอรี่</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-8 border-pink-400 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                <div class="flex flex-col items-center justify-center min-w-[80px]">
+                                    <div class="text-6xl text-pink-500 leading-none">♸</div>
+                                    <div class="font-black text-pink-600 mt-2 text-sm">PS</div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl text-pink-600 mb-1">6. PS (พีเอส) - กล่องโฟม</h3>
+                                    <p class="text-slate-600 text-sm"><strong>ลดการใช้:</strong> หลีกเลี่ยงการใช้โฟมใส่อาหารร้อน เปลี่ยนมาใช้ปิ่นโต<br><strong>การรีไซเคิล:</strong> นำไปทำไม้แขวนเสื้อ (รีไซเคิลยากและไม่คุ้มค่า)</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border-l-8 border-gray-400 shadow-sm flex flex-col md:flex-row gap-4 items-center md:items-start">
+                                <div class="flex flex-col items-center justify-center min-w-[80px]">
+                                    <div class="text-6xl text-gray-500 leading-none">♹</div>
+                                    <div class="font-black text-gray-600 mt-2 text-sm">OTHER</div>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-xl text-gray-600 mb-1">7. OTHER (อื่นๆ) - ซองขนม, พลาสติกผสม</h3>
+                                    <p class="text-slate-600 text-sm"><strong>ลดการใช้:</strong> ลดการบริโภคสินค้าที่ใช้บรรจุภัณฑ์ซ้อนกันหลายชั้น<br><strong>การรีไซเคิล:</strong> มักนำไปเผาเพื่อผลิตพลังงานไฟฟ้า (ขยะกำพร้า)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-8">
+                                <button onclick="switchRecycleTab('game')" class="btn-3d btn-green w-full md:w-auto px-12 py-3 text-xl">
+                                    👉 จำได้แล้ว ไปลุยเกมคัดแยกขยะกัน!
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- เกมแยกขยะ -->
+                        <div id="recycle-game" class="hidden text-center bg-emerald-50/50 p-6 md:p-10 rounded-3xl border-4 border-emerald-100 shadow-inner">
+                            <h3 class="text-2xl font-cute font-black text-emerald-600 mb-2">ทิ้งขยะชิ้นนี้ลงถังไหนดี?</h3>
+                            <p class="text-slate-500 font-bold mb-6">คะแนน: <span id="recycle-score" class="text-2xl font-black text-emerald-500">0</span> / 10</p>
+                            
+                            <div class="bg-white inline-block px-12 py-8 rounded-[2rem] shadow-sm border-2 border-emerald-50 mb-8 w-full max-w-sm">
+                                <div id="trash-item" class="text-[6rem] mb-4 anim-float leading-none">❓</div>
+                                <div id="trash-name" class="font-bold text-2xl text-slate-700">กำลังโหลด...</div>
+                            </div>
+
+                            <p class="text-sm font-bold text-slate-400 mb-3">กดเลือกถังขยะด้านล่างเลย 👇</p>
+                            <div class="grid grid-cols-4 md:grid-cols-7 gap-2 md:gap-3">
+                                <button onclick="checkTrash(1)" class="bg-white hover:bg-blue-50 border-b-4 border-blue-400 rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center transition-all active:border-b-0 active:translate-y-1">
+                                    <span class="text-4xl md:text-5xl text-blue-500 leading-none">♳</span>
+                                    <span class="font-black text-blue-600 text-xs md:text-sm mt-1">PETE</span>
+                                </button>
+                                <button onclick="checkTrash(2)" class="bg-white hover:bg-green-50 border-b-4 border-green-400 rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center transition-all active:border-b-0 active:translate-y-1">
+                                    <span class="text-4xl md:text-5xl text-green-500 leading-none">♴</span>
+                                    <span class="font-black text-green-600 text-xs md:text-sm mt-1">HDPE</span>
+                                </button>
+                                <button onclick="checkTrash(3)" class="bg-white hover:bg-red-50 border-b-4 border-red-400 rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center transition-all active:border-b-0 active:translate-y-1">
+                                    <span class="text-4xl md:text-5xl text-red-500 leading-none">♵</span>
+                                    <span class="font-black text-red-600 text-xs md:text-sm mt-1">PVC</span>
+                                </button>
+                                <button onclick="checkTrash(4)" class="bg-white hover:bg-yellow-50 border-b-4 border-yellow-400 rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center transition-all active:border-b-0 active:translate-y-1">
+                                    <span class="text-4xl md:text-5xl text-yellow-500 leading-none">♶</span>
+                                    <span class="font-black text-yellow-600 text-xs md:text-sm mt-1">LDPE</span>
+                                </button>
+                                <button onclick="checkTrash(5)" class="bg-white hover:bg-purple-50 border-b-4 border-purple-400 rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center transition-all active:border-b-0 active:translate-y-1">
+                                    <span class="text-4xl md:text-5xl text-purple-500 leading-none">♷</span>
+                                    <span class="font-black text-purple-600 text-xs md:text-sm mt-1">PP</span>
+                                </button>
+                                <button onclick="checkTrash(6)" class="bg-white hover:bg-pink-50 border-b-4 border-pink-400 rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center transition-all active:border-b-0 active:translate-y-1">
+                                    <span class="text-4xl md:text-5xl text-pink-500 leading-none">♸</span>
+                                    <span class="font-black text-pink-600 text-xs md:text-sm mt-1">PS</span>
+                                </button>
+                                <button onclick="checkTrash(7)" class="bg-white hover:bg-gray-100 border-b-4 border-gray-400 rounded-2xl p-2 md:p-3 flex flex-col items-center justify-center transition-all active:border-b-0 active:translate-y-1">
+                                    <span class="text-4xl md:text-5xl text-gray-500 leading-none">♹</span>
+                                    <span class="font-black text-gray-600 text-xs md:text-sm mt-1">OTHER</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.switchRecycleTab = function(tab) {
+            const knw = document.getElementById('recycle-knowledge');
+            const gm = document.getElementById('recycle-game');
+            const tk = document.getElementById('tab-knowledge');
+            const tg = document.getElementById('tab-game');
+
+            if(tab === 'knowledge') {
+                knw.classList.remove('hidden'); gm.classList.add('hidden');
+                tk.className = "bg-emerald-500 text-white px-6 py-2 rounded-full font-bold shadow-md transition-all";
+                tg.className = "bg-white text-slate-600 px-6 py-2 rounded-full font-bold shadow-md hover:bg-slate-50 transition-all border-2 border-slate-100";
+            } else {
+                knw.classList.add('hidden'); gm.classList.remove('hidden');
+                tg.className = "bg-emerald-500 text-white px-6 py-2 rounded-full font-bold shadow-md transition-all";
+                tk.className = "bg-white text-slate-600 px-6 py-2 rounded-full font-bold shadow-md hover:bg-slate-50 transition-all border-2 border-slate-100";
+                startRecycleGame();
+            }
+        }
+
+        window.startRecycleGame = function() {
+            recycleGameScore = 0;
+            recycleGameCount = 0; // รีเซ็ตจำนวนข้อ
+            document.getElementById('recycle-score').innerText = recycleGameScore;
+            nextTrash();
+        }
+
+        window.nextTrash = function() {
+            if(recycleGameCount >= 10) { // เล่นครบ 10 ข้อแล้วจบเกมเลย
+                updatePlayer(currentUser, { recycleDone: true, recycleScore: recycleGameScore });
+                Swal.fire({
+                    title: '<span class="font-cute text-3xl text-emerald-500">จบเกมแล้ว!</span>',
+                    html: `<p class="font-bold text-slate-500 font-cute">คุณคัดแยกขยะถูก ${recycleGameScore} จาก 10 ชิ้น<br>ผ่านด่านรีไซเคิลเรียบร้อยแล้ว!</p>`,
+                    icon: 'success',
+                    confirmButtonColor: '#10b981',
+                    customClass: { popup: 'rounded-3xl border-4 border-emerald-200 shadow-xl font-cute' }
+                }).then(() => { render(); });
+                return;
+            }
+            currentTrashItem = trashItems[Math.floor(Math.random() * trashItems.length)];
+            const ti = document.getElementById('trash-item');
+            ti.innerText = currentTrashItem.icon;
+            ti.classList.remove('anim-drop');
+            void ti.offsetWidth; // trigger reflow
+            ti.classList.add('anim-drop');
+            document.getElementById('trash-name').innerText = currentTrashItem.name;
+        }
+
+        window.checkTrash = function(binId) {
+            if(!currentTrashItem) return;
+            
+            recycleGameCount++; // นับว่าเล่นไปแล้ว 1 ข้อ
+            
+            if(binId === currentTrashItem.type) {
+                recycleGameScore++;
+                document.getElementById('recycle-score').innerText = recycleGameScore;
+                Toast.fire({ icon: 'success', title: 'ทิ้งถูกถัง เก่งมาก!' });
+                nextTrash();
+            } else {
+                // สร้างคำอธิบายตอนตอบผิด
+                const typeNames = ["", "PETE (หมายเลข 1)", "HDPE (หมายเลข 2)", "PVC (หมายเลข 3)", "LDPE (หมายเลข 4)", "PP (หมายเลข 5)", "PS (หมายเลข 6)", "OTHER (หมายเลข 7)"];
+                const correctTypeName = typeNames[currentTrashItem.type];
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ผิดถังจ้า!',
+                    html: `<p class="font-cute text-lg text-slate-600"><b>${currentTrashItem.name}</b> จัดอยู่ในประเภท<br><span class="text-rose-500 font-black text-2xl">${correctTypeName}</span> นะจ๊ะ!</p>`,
+                    confirmButtonColor: '#ef4444',
+                    customClass: { popup: 'rounded-2xl font-cute' }
+                }).then(() => {
+                    nextTrash(); // ปิดป๊อปอัปแล้วสุ่มข้อต่อไปทันที ไม่ต้องให้แก้ตัว
+                });
+            }
+        }
+
         function renderWorksheet() {
             const p = appData.players[currentUser];
             const isDone = p.worksheet !== null;
-            const ans = Array.isArray(p.worksheet) ? p.worksheet : ['', '', ''];
+            const ans = Array.isArray(p.worksheet) ? p.worksheet : ['', ''];
 
             return `
                 <div class="w-full max-w-[800px] mx-auto anim-drop">
@@ -709,14 +975,14 @@
                         <button onclick="render()" class="bg-white border-2 border-white shadow-sm text-slate-600 px-5 py-2 rounded-full font-bold hover:text-pink-500 hover:border-pink-200 transition-colors flex items-center gap-2">
                             <i class="fa-solid fa-arrow-left"></i> กลับไปแผนที่
                         </button>
-                        ${isDone ? `<button onclick="window.print()" class="btn-3d btn-green px-6 py-2 text-base flex items-center gap-2"><i class="fa-solid fa-print"></i> พิมพ์ / เซฟ PDF</button>` : ''}
+                        ${isDone ? `<button onclick="window.print()" class="btn-3d btn-green px-6 py-2 text-base flex items-center gap-2"><i class="fa-solid fa-print"></i> พิมพ์ PDF</button>` : ''}
                     </div>
 
                     <!-- กระดาษใบงาน -->
                     <div class="worksheet-paper">
                         <div class="washi-tape"></div>
                         <div class="text-center mb-8">
-                            <h2 class="text-3xl font-cute font-black text-slate-800 mb-2">ใบงานที่ ๑ เรื่อง พอลิเมอร์</h2>
+                            <h2 class="text-3xl font-cute font-black text-slate-800 mb-2">ใบงานออนไลน์: พอลิเมอร์ในชีวิตประจำวัน</h2>
                             <h3 class="text-lg font-bold text-slate-500">วิชา เคมี มัธยมศึกษาปีที่ ๖</h3>
                         </div>
                         
@@ -727,18 +993,13 @@
 
                         <form id="ws-form" onsubmit="submitWorksheet(event)">
                             <div class="mb-8">
-                                <label class="block font-bold text-xl text-slate-700 mb-3">๑. จงอธิบายความหมายของคำว่า "พอลิเมอร์" และ "มอนอเมอร์" ให้เข้าใจง่าย 📝</label>
+                                <label class="block font-bold text-xl text-slate-700 mb-3">๑. จากกิจกรรมต่อคลิปหนีบกระดาษ ปฏิกิริยาแบบเติมและแบบควบแน่นต่างกันอย่างไร? 📝</label>
                                 <textarea id="ws-q1" class="worksheet-input font-cute text-blue-700" rows="3" placeholder="พิมพ์คำตอบด้วยภาษาของหนูเองที่นี่..." required>${ans[0] || ''}</textarea>
                             </div>
 
                             <div class="mb-8">
-                                <label class="block font-bold text-xl text-slate-700 mb-3">๒. ปฏิกิริยาแบบเติม กับ แบบควบแน่น ต่างกันยังไงนะ? (อธิบายจากที่ลองผสมสารดูสิ) 🧪</label>
-                                <textarea id="ws-q2" class="worksheet-input font-cute text-blue-700" rows="3" placeholder="พิมพ์คำตอบที่นี่..." required>${ans[1] || ''}</textarea>
-                            </div>
-
-                            <div class="mb-8">
-                                <label class="block font-bold text-xl text-slate-700 mb-3">๓. ลองมองไปรอบตัว ยกตัวอย่างของที่ทำจากพอลิเมอร์มาสัก ๓ อย่างสิ 🔍</label>
-                                <textarea id="ws-q3" class="worksheet-input font-cute text-blue-700" rows="2" placeholder="เช่น ขวดน้ำ, ถุง..." required>${ans[2] || ''}</textarea>
+                                <label class="block font-bold text-xl text-slate-700 mb-3">๒. ยกตัวอย่างพลาสติกที่ใช้ในบ้านมา ๒ ชนิด พร้อมบอกสัญลักษณ์รีไซเคิล และวิธีลดการใช้งาน ♻️</label>
+                                <textarea id="ws-q2" class="worksheet-input font-cute text-blue-700" rows="3" placeholder="เช่น ขวดน้ำดื่ม (PETE 1) ลดการใช้โดยพกกระบอกน้ำ..." required>${ans[1] || ''}</textarea>
                             </div>
 
                             <div class="text-center mt-12 no-print">
@@ -746,9 +1007,9 @@
                                     <div class="inline-block bg-green-100 border-green-300 text-green-600 border-4 font-cute font-black text-2xl px-8 py-4 rounded-[2rem] mb-4">
                                         <i class="fa-solid fa-check-circle mr-2"></i> ครูตรวจแล้ว ได้คะแนน ${p.worksheetScore} / 10 ยอดเยี่ยม!
                                     </div>
-                                    <p class="text-slate-500 font-bold">*หากแก้ไขใบงานและส่งใหม่ สถานะการตรวจและคะแนนจะถูกล้างเพื่อให้ครูตรวจใหม่นะครับ</p>
+                                    <p class="text-slate-500 font-bold">*หากแก้ไขใบงานและส่งใหม่ สถานะการตรวจจะถูกรีเซ็ตนะครับ</p>
                                 ` : ''}
-                                <button type="submit" class="btn-3d btn-pink py-4 px-12 text-2xl mt-4">
+                                <button type="submit" class="btn-3d btn-yellow w-full max-w-sm py-4 text-2xl mt-4">
                                     <i class="fa-solid fa-paper-plane mr-2"></i> ${isDone ? 'บันทึกการแก้ไขและส่งใหม่' : 'ส่งใบงานให้คุณครู!'}
                                 </button>
                             </div>
@@ -762,14 +1023,12 @@
             e.preventDefault();
             const q1 = document.getElementById('ws-q1').value;
             const q2 = document.getElementById('ws-q2').value;
-            const q3 = document.getElementById('ws-q3').value;
 
-            // บันทึกลง Local Storage (รีเซ็ตคะแนนที่ตรวจแล้วด้วย ถ้าแก้ใหม่)
-            updatePlayer(currentUser, { worksheet: [q1, q2, q3], worksheetScore: null, worksheetGraded: false });
+            updatePlayer(currentUser, { worksheet: [q1, q2], worksheetScore: null, worksheetGraded: false });
 
             Swal.fire({
                 title: '<span class="font-cute text-3xl text-green-500">ส่งสำเร็จ! เย้! 🎉</span>',
-                html: '<p class="text-slate-600 font-bold font-cute">ข้อมูลบันทึกไว้ในเครื่องแล้วจ้า กลับไปดูแผนที่ต่อได้เลย!</p>',
+                html: '<p class="text-slate-600 font-bold font-cute">ข้อมูลถูกบันทึกไว้ในเครื่องเรียบร้อยแล้วจ้า</p>',
                 icon: 'success',
                 confirmButtonColor: '#22c55e',
                 customClass: { popup: 'rounded-3xl border-4 border-green-200 shadow-xl font-cute' }
@@ -777,7 +1036,6 @@
         }
 
         function renderTeacherDash() {
-            // โหลดข้อมูลล่าสุด
             appData = loadData();
             const players = Object.values(appData.players);
             
@@ -788,7 +1046,7 @@
                             <h2 class="text-4xl font-cute font-black text-indigo-500 flex items-center justify-center md:justify-start gap-3 mb-2">
                                 <i class="fa-solid fa-chart-line"></i> แผงควบคุม (Dashboard)
                             </h2>
-                            <p class="text-slate-500 font-bold text-lg">สรุปผลคะแนนของนักเรียนในเครื่องนี้ 📊</p>
+                            <p class="text-slate-500 font-bold text-lg">สรุปผลคะแนนออฟไลน์ของนักเรียนในเครื่องนี้ 📊</p>
                         </div>
                         <div class="flex flex-wrap justify-center gap-3 mt-6 md:mt-0">
                             <button onclick="render()" class="bg-white border-2 border-slate-200 text-slate-600 hover:bg-slate-50 px-5 py-2.5 rounded-full font-bold shadow-sm flex items-center gap-2 transition-colors">
@@ -804,11 +1062,13 @@
                     </div>
 
                     <div class="overflow-x-auto bg-white rounded-3xl border-4 border-indigo-50 shadow-sm">
-                        <table class="w-full text-left border-collapse min-w-[800px]">
+                        <table class="w-full text-left border-collapse min-w-[900px]">
                             <thead>
                                 <tr class="bg-indigo-100 text-indigo-700">
                                     <th class="p-5 font-cute font-bold text-xl rounded-tl-2xl">ชื่อนักเรียน</th>
                                     <th class="p-5 font-cute font-bold text-xl text-center">ก่อนเรียน (5)</th>
+                                    <th class="p-5 font-cute font-bold text-xl text-center">ทดลอง 🧪</th>
+                                    <th class="p-5 font-cute font-bold text-xl text-center">แยกขยะ ♻️</th>
                                     <th class="p-5 font-cute font-bold text-xl text-center">ใบงาน 📝</th>
                                     <th class="p-5 font-cute font-bold text-xl text-center">หลังเรียน (5)</th>
                                     <th class="p-5 font-cute font-bold text-xl text-center rounded-tr-2xl">พัฒนาการ 🌟</th>
@@ -818,14 +1078,24 @@
             `;
 
             if (players.length === 0) {
-                html += `<tr><td colspan="5" class="text-center p-12 text-slate-400 font-bold text-lg">ยังไม่มีข้อมูลนักเรียนเล่นในเครื่องนี้เลยจ้า~ 🏃‍♂️💨</td></tr>`;
+                html += `<tr><td colspan="7" class="text-center p-12 text-slate-400 font-bold text-lg">ยังไม่มีข้อมูลนักเรียนเล่นในเครื่องนี้เลยจ้า~ 🏃‍♂️💨</td></tr>`;
             } else {
                 players.forEach(p => {
                     const pre = p.preTest !== null ? p.preTest : '-';
                     const post = p.postTest !== null ? p.postTest : '-';
+                    const lab = p.labDone ? '✅' : '❌';
+                    
+                    let recycle = '❌';
+                    if (p.recycleDone) {
+                        // ป้องกันข้อมูลตกค้างจากเวอร์ชันเก่า ถ้าหาตัวแปร recycleScore ไม่เจอ จะโชว์ ✅ ไปก่อน
+                        // แต่ถ้ามีคะแนน จะโชว์เป็นตัวเลขสีเขียวเด่นๆ
+                        recycle = (p.recycleScore !== undefined && p.recycleScore !== null)
+                            ? `<span class="text-emerald-600 font-black">${p.recycleScore}/10</span>` 
+                            : '✅';
+                    }
+                    
                     let progress = '-';
                     let progressStyle = 'bg-slate-100 text-slate-500 border-2 border-slate-200';
-                    
                     if (p.preTest !== null && p.postTest !== null) {
                         const diff = Number(p.postTest) - Number(p.preTest);
                         if (diff > 0) { progress = `+${diff}`; progressStyle = 'text-green-600 bg-green-100 border-2 border-green-200'; }
@@ -845,17 +1115,15 @@
                     html += `
                         <tr class="hover:bg-indigo-50/50 transition-colors group">
                             <td class="p-5 font-bold text-slate-700 text-lg flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-child-reaching"></i>
-                                </div>
+                                <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform"><i class="fa-solid fa-child-reaching"></i></div>
                                 ${p.name}
                             </td>
                             <td class="p-5 text-center font-black text-slate-500 text-xl">${pre}</td>
+                            <td class="p-5 text-center text-xl">${lab}</td>
+                            <td class="p-5 text-center text-xl">${recycle}</td>
                             <td class="p-5 text-center">${wsStatus}</td>
                             <td class="p-5 text-center font-black text-slate-500 text-xl">${post}</td>
-                            <td class="p-5 text-center">
-                                <span class="px-4 py-1.5 rounded-full font-black text-lg ${progressStyle}">${progress}</span>
-                            </td>
+                            <td class="p-5 text-center"><span class="px-4 py-1.5 rounded-full font-black text-lg ${progressStyle}">${progress}</span></td>
                         </tr>
                     `;
                 });
@@ -872,21 +1140,18 @@
 
         window.viewWorksheet = function(name) {
             const p = appData.players[name];
-            const ans = Array.isArray(p.worksheet) ? p.worksheet : ['', '', ''];
+            const ans = Array.isArray(p.worksheet) ? p.worksheet : ['', ''];
             const currentScore = p.worksheetScore !== null ? p.worksheetScore : '';
             
             Swal.fire({
                 title: `<span class="font-cute text-3xl text-indigo-600">ตรวจใบงานของ ${name}</span>`,
                 html: `
                     <div class="text-left font-cute text-slate-700 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')] bg-amber-50 p-6 rounded-2xl mt-4 border-2 border-amber-200 shadow-inner overflow-y-auto max-h-[50vh]">
-                        <p class="font-bold text-lg text-rose-500 mb-2">๑. อธิบายความหมาย "พอลิเมอร์" และ "มอนอเมอร์"</p>
+                        <p class="font-bold text-lg text-rose-500 mb-2">๑. ปฏิกิริยาแบบเติมและแบบควบแน่นต่างกันอย่างไร?</p>
                         <p class="mb-6 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl whitespace-pre-wrap">${ans[0] || '-'}</p>
                         
-                        <p class="font-bold text-lg text-rose-500 mb-2">๒. ปฏิกิริยาแบบเติม กับ แบบควบแน่น ต่างกันยังไง?</p>
+                        <p class="font-bold text-lg text-rose-500 mb-2">๒. ยกตัวอย่างพลาสติกที่ใช้ในบ้าน ๒ ชนิด พร้อมบอกวิธีลดการใช้งาน</p>
                         <p class="mb-6 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl whitespace-pre-wrap">${ans[1] || '-'}</p>
-                        
-                        <p class="font-bold text-lg text-rose-500 mb-2">๓. ยกตัวอย่างของที่ทำจากพอลิเมอร์มา ๓ อย่าง</p>
-                        <p class="mb-8 text-xl border-b-2 border-dashed border-amber-300 pb-2 text-blue-700 bg-white/60 px-4 py-2 rounded-xl whitespace-pre-wrap">${ans[2] || '-'}</p>
                         
                         <div class="bg-indigo-50 border-4 border-indigo-200 p-4 rounded-2xl flex flex-col items-center justify-center">
                             <label class="font-black text-indigo-500 text-xl mb-3">ให้คะแนนใบงาน (เต็ม 10)</label>
@@ -903,7 +1168,7 @@
                 customClass: { popup: 'rounded-3xl border-4 border-indigo-200 shadow-2xl font-cute' },
                 preConfirm: () => {
                     const scoreInput = document.getElementById('grading-score').value;
-                    if(scoreInput === '') { Swal.showValidationMessage('กรุณาใส่คะแนนให้เด็กๆ ด้วยนะจ๊ะ'); return false; }
+                    if(scoreInput === '') { Swal.showValidationMessage('กรุณาใส่คะแนนด้วยนะจ๊ะ'); return false; }
                     if(scoreInput < 0 || scoreInput > 10) { Swal.showValidationMessage('คะแนนต้องอยู่ระหว่าง 0 - 10 จ้า'); return false; }
                     return scoreInput;
                 }
@@ -918,11 +1183,13 @@
 
         window.exportExcel = function() {
             let csv = '\uFEFF'; 
-            csv += 'ชื่อนักเรียน,คะแนนก่อนเรียน (5),การส่งใบงาน,คะแนนใบงาน (10),คะแนนหลังเรียน (5),พัฒนาการ\n';
+            csv += 'ชื่อนักเรียน,คะแนนก่อนเรียน (5),ทดลอง (Lab),เกมแยกขยะ (10),สถานะใบงาน,คะแนนใบงาน (10),คะแนนหลังเรียน (5),พัฒนาการ\n';
             
             Object.values(appData.players).forEach(p => {
                 const pre = p.preTest !== null ? p.preTest : '';
                 const post = p.postTest !== null ? p.postTest : '';
+                const lab = p.labDone ? 'ผ่าน' : 'ไม่ผ่าน';
+                const recycle = p.recycleDone ? (p.recycleScore !== undefined && p.recycleScore !== null ? p.recycleScore : 'ผ่าน') : 'ไม่ผ่าน';
                 let wsStatus = 'ยังไม่ส่ง';
                 let wsScore = '';
                 if (p.worksheet !== null) {
@@ -933,13 +1200,13 @@
                 let diff = '';
                 if (pre !== '' && post !== '') diff = Number(post) - Number(pre);
                 
-                csv += `"${p.name}",${pre},${wsStatus},${wsScore},${post},${diff}\n`;
+                csv += `"${p.name}",${pre},${lab},${recycle},${wsStatus},${wsScore},${post},${diff}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'รายงานคะแนน_พอลิเมอร์.csv';
+            link.download = 'รายงานคะแนน_พอลิเมอร์(7E).csv';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -960,7 +1227,6 @@
                 customClass: { popup: 'rounded-3xl border-4 border-rose-200 shadow-xl font-cute' }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // ล้างข้อมูลใน Local Storage
                     appData = { players: {}, lastUser: '' };
                     saveData(appData);
                     render();
